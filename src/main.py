@@ -10,6 +10,7 @@ from pathlib import Path
 from .utils import load_config, setup_logging, get_market_config, list_available_markets
 from .ig_auth import IGAuth
 from .ig_stream import IGStream
+from .ig_historical import IGHistoricalData
 from .candle_builder import CandleBuilder
 from .strategy import RSI2Strategy
 from .broker import IGBroker
@@ -70,6 +71,9 @@ class LiveTrader:
         timeframe_sec = self.config.get('timeframe_sec', 1800)
         self.candle_builder = CandleBuilder(timeframe_sec)
         self.candle_builder.set_candle_callback(self.on_candle_complete)
+
+        # Pre-load historical candles for accurate RSI
+        self._preload_historical_candles()
 
         # Start tick logging
         tick_file = Path("data/ticks") / f"ticks_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
@@ -148,6 +152,46 @@ class LiveTrader:
 
         finally:
             self.stop()
+
+    def _preload_historical_candles(self):
+        """Pre-load historical candles from IG API for accurate RSI calculation."""
+        preload_candles = self.config.get('preload_candles', 50)
+
+        if preload_candles <= 0:
+            self.logger.info("Historical candle pre-loading disabled (preload_candles=0)")
+            return
+
+        try:
+            self.logger.info(f"Pre-loading {preload_candles} historical candles...")
+
+            # Initialize historical data fetcher
+            historical = IGHistoricalData(self.auth)
+
+            # Get resolution from timeframe
+            timeframe_sec = self.config.get('timeframe_sec', 1800)
+            resolution = historical.get_resolution_from_timeframe(timeframe_sec)
+
+            # Fetch historical candles
+            candles = historical.fetch_historical_candles(
+                epic=self.config.get('epic'),
+                resolution=resolution,
+                num_points=preload_candles
+            )
+
+            if not candles:
+                self.logger.warning("Failed to fetch historical candles, starting with cold RSI")
+                self.logger.warning("RSI will warm up over time as candles accumulate")
+                return
+
+            # Load candles into strategy
+            self.strategy.load_historical_candles(candles)
+
+            self.logger.info(f"✓ Successfully pre-loaded {len(candles)} historical candles")
+            self.logger.info(f"Historical data range: {candles[0]['timestamp']} to {candles[-1]['timestamp']}")
+
+        except Exception as e:
+            self.logger.error(f"Error pre-loading historical candles: {e}", exc_info=True)
+            self.logger.warning("Starting with cold RSI - will warm up over time")
 
     def stop(self):
         """Stop live trading."""

@@ -1,16 +1,20 @@
 # Global strategy parameters (can be overridden by CLI args)
 timeframe_sec: 1800
 rsi_period: 2
-oversold: 10.0
+oversold: 5.0
 
-take_profits_pts: 4.0
-stop_loss_pts: 30.0
+take_profits_pts: 8.0
+stop_loss_pts: 100.0
 
 size_gbp_per_point: 2.0
 only_long: true
 one_position_at_a_time: true
 dry_run: true
 log_level: "INFO"
+
+# Historical data pre-loading (for accurate RSI at startup)
+preload_candles: 50  # Number of historical bars to fetch from IG API at startup
+min_candles_for_trading: 20  # Minimum candles before RSI is considered reliable
 
 # Market-specific configurations
 markets:
@@ -23,14 +27,14 @@ markets:
     no_trade_first_minutes: 30
     spread_assumption_pts: 0.6
 
-  # GERMANY40:
-  #   symbol: "Germany 40"
-  #   epic: "IX.D.DAX.DAILY.IP"
-  #   tz: "Europe/Berlin"
-  #   session_open: "09:00"
-  #   session_close: "17:30"
-  #   no_trade_first_minutes: 30
-  #   spread_assumption_pts: 2
+  GERMANY40:
+    symbol: "Germany 40"
+    epic: "IX.D.DAX.DAILY.IP"
+    tz: "Europe/Berlin"
+    session_open: "09:00"
+    session_close: "17:30"
+    no_trade_first_minutes: 30
+    spread_assumption_pts: 2
 
 # Default market (used if --market not specified)
 default_market: "US500"

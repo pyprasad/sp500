@@ -2,7 +2,7 @@
 
 import logging
 import pandas as pd
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 from .indicators import compute_rsi
@@ -45,6 +45,35 @@ class RSI2Strategy:
         # Keep only necessary history (RSI period + some buffer)
         if len(self.candles) > self.rsi_period + 50:
             self.candles = self.candles[-(self.rsi_period + 50):]
+
+    def load_historical_candles(self, candles: List[Dict[str, Any]]):
+        """
+        Load historical candles for strategy initialization.
+        This bypasses the normal limit to ensure sufficient history for accurate RSI.
+
+        Args:
+            candles: List of historical candle dictionaries (sorted by timestamp, oldest first)
+        """
+        if not candles:
+            self.logger.warning("No historical candles to load")
+            return
+
+        # Clear existing candles and load historical data
+        self.candles = candles.copy()
+
+        self.logger.info(f"Loaded {len(self.candles)} historical candles")
+        self.logger.debug(f"Historical range: {self.candles[0]['timestamp']} to {self.candles[-1]['timestamp']}")
+
+        # Compute indicators immediately
+        self.compute_indicators()
+
+        # Log RSI confidence
+        if self.rsi_values:
+            current_rsi = self.get_current_rsi()
+            if current_rsi is not None:
+                self.logger.info(
+                    f"Initial RSI: {current_rsi:.2f} [READY - {len(self.candles)}/{len(self.candles)} bars]"
+                )
 
     def compute_indicators(self):
         """Compute RSI on current candle data."""

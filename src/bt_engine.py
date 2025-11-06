@@ -114,7 +114,12 @@ class BacktestEngine:
 
     def run_backtest(self, df: pd.DataFrame, tp_pts: float) -> List[Dict[str, Any]]:
         """
-        Run backtest on historical data.
+        Run backtest on historical data with REALISTIC modeling.
+
+        Key realistic assumptions:
+        1. NO LOOK-AHEAD BIAS: Entry at NEXT bar's open (after RSI signal on current bar close)
+        2. PROPER SPREAD: Entry at ask (mid + spread/2), exits at bid (mid - spread/2)
+        3. TP/SL checks against bid prices: high - spread/2 for TP, low - spread/2 for SL
 
         Args:
             df: DataFrame with OHLCV data
@@ -129,7 +134,7 @@ class BacktestEngine:
         if len(df) == 0:
             return []
 
-        # Compute RSI
+        # Compute RSI on close prices
         rsi = compute_rsi(df['close'], self.rsi_period)
         df['rsi'] = rsi
 
@@ -138,32 +143,44 @@ class BacktestEngine:
         position = None
         trades = []
         current_date = None
+        entry_signal = False  # Signal to enter on NEXT bar
 
         for idx, row in df.iterrows():
             bar_timestamp = row['timestamp']
             bar_date = self.session_clock.get_trading_date(bar_timestamp)
 
-            # Reset seen_oversold at start of new trading day
+            # Reset state at start of new trading day
             if current_date is None or bar_date != current_date:
                 current_date = bar_date
                 if position is None:
                     seen_oversold = False
+                    entry_signal = False
 
             # Skip if RSI not available
             if pd.isna(row['rsi']):
                 continue
 
-            # Check for oversold condition
+            # === ENTRY LOGIC ===
+            # Check for oversold condition (RSI <= threshold)
             if row['rsi'] <= self.oversold:
                 seen_oversold = True
 
-            # Entry logic: no position + seen oversold + RSI crosses above threshold + entry allowed
+            # Detect entry signal: RSI crosses above threshold after being oversold
+            # Signal is generated at bar CLOSE (when RSI is calculated)
             if (position is None and
+                not entry_signal and
                 seen_oversold and
                 row['rsi'] > self.oversold and
                 row['entry_allowed']):
 
-                # Enter at bar open + half spread (ask price)
+                # Mark entry signal for NEXT bar
+                entry_signal = True
+                seen_oversold = False  # Reset after signal
+
+            # Execute entry on NEXT bar (realistic: no look-ahead)
+            elif entry_signal and position is None:
+                # Enter at NEXT bar's open + half spread (ask price)
+                # This is realistic: signal generated at previous bar close, enter at this bar open
                 entry_price = row['open'] + (self.spread_pts / 2)
 
                 position = {
@@ -175,25 +192,32 @@ class BacktestEngine:
                     'bars_held': 0
                 }
 
-                seen_oversold = False  # Reset after entry
+                entry_signal = False  # Reset signal
 
-            # Exit logic: check if position exists
+            # === EXIT LOGIC ===
             if position is not None:
                 position['bars_held'] += 1
 
                 exit_price = None
                 exit_reason = None
 
-                # Calculate TP and SL levels
+                # Calculate TP and SL levels (from entry price)
+                # TP: entry + TP points (bid must reach this)
+                # SL: entry - SL points (bid must hit this)
                 tp_level = position['entry_price'] + tp_pts
                 sl_level = position['entry_price'] - self.stop_loss_pts
 
-                # Check SL first (conservative: SL before TP on same bar)
-                if row['low'] <= sl_level:
+                # Get bid prices from bar high/low (mid - spread/2)
+                bid_high = row['high'] - (self.spread_pts / 2)
+                bid_low = row['low'] - (self.spread_pts / 2)
+
+                # Check SL first (conservative: SL before TP if both hit same bar)
+                # SL hit if bid_low <= sl_level
+                if bid_low <= sl_level:
                     exit_price = sl_level
                     exit_reason = 'SL'
-                # Then check TP
-                elif row['high'] >= tp_level:
+                # Then check TP: TP hit if bid_high >= tp_level
+                elif bid_high >= tp_level:
                     exit_price = tp_level
                     exit_reason = 'TP'
 

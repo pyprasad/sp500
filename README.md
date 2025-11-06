@@ -333,6 +333,46 @@ python3 -m src.main --market GERMANY40 --tp 10 --rsi-period 3 --timeframe 900
 - **Stop Loss**: 2.0 pts (configurable)
 - **Session Discipline**: Flat overnight, reset daily state
 
+### RSI Calculation Method
+
+This implementation uses **Wilder's Smoothing Method** for RSI calculation, which matches the standard used by IG, TradingView, MetaTrader, and other professional platforms.
+
+**How Wilder's RSI works:**
+
+1. **Calculate price changes** for each candle
+2. **Separate gains and losses**:
+   - Gain = change if positive, else 0
+   - Loss = |change| if negative, else 0
+3. **First average** (at bar N = RSI period):
+   - `avg_gain = mean(first N gains)`
+   - `avg_loss = mean(first N losses)`
+4. **Subsequent averages** use exponential smoothing:
+   - `new_avg_gain = (1/N) × current_gain + ((N-1)/N) × prev_avg_gain`
+   - `new_avg_loss = (1/N) × current_loss + ((N-1)/N) × prev_avg_loss`
+5. **Calculate RS and RSI**:
+   - `RS = avg_gain / avg_loss`
+   - `RSI = 100 - (100 / (1 + RS))`
+
+**Key characteristics:**
+- For RSI(2), smoothing factor alpha = 1/2 = 0.5
+- Exponential decay incorporates ALL historical price data
+- More stable than simple moving average approaches
+- **Matches IG platform values** when sufficient history is available
+
+**Cold Start Handling:**
+
+The system attempts to pre-load 50 historical candles from IG API at startup to ensure accurate RSI from the beginning. If historical data is unavailable (e.g., API limits exceeded), RSI will "warm up" as live candles accumulate:
+
+- **Minimum for calculation**: 3 candles (RSI period + 1)
+- **Recommended minimum**: 20 candles for reliable signals
+- **Full confidence**: 50+ candles
+
+Configuration in `config.yaml`:
+```yaml
+preload_candles: 50          # Number of historical bars to fetch at startup
+min_candles_for_trading: 20  # Minimum candles before RSI is considered reliable
+```
+
 ## Architecture
 
 ### Live Trading Flow
@@ -502,6 +542,83 @@ Possible reasons:
 7. **Market Conditions**: Strategy performance depends on market conditions
 8. **Spread and Slippage**: Real fills may differ from backtest assumptions
 
+## Backtest Results
+
+**IMPORTANT:** These are REALISTIC backtest results with proper modeling of:
+- No look-ahead bias (enter at NEXT bar, not same bar as signal)
+- Proper spread accounting (entry at ask, exit at bid)
+- Conservative TP/SL checks against bid prices
+
+Results from backtesting on GERMANY40 (full year 2024, 11,401 bars):
+
+### GERMANY40 Performance - REALISTIC MODELING
+
+#### TP = 5 pts, SL = 30 pts, Spread = 2 pts
+- **Total Trades**: 232
+- **Win Rate**: 72.41% (168 wins / 64 losses)
+- **Expectancy**: -4.418 pts per trade ⚠️
+- **Total P&L**: -1,025.08 pts / -2,050.16 GBP
+- **Max Drawdown**: -1,035.08 pts
+- **Avg Win**: 5.000 pts
+- **Avg Loss**: -29.142 pts
+- **Avg Bars Held**: 1.2
+- **Exit Breakdown**: 168 TP / 61 SL / 3 EOD
+
+#### TP = 10 pts, SL = 30 pts, Spread = 2 pts
+- **Total Trades**: 232
+- **Win Rate**: 68.97% (160 wins / 72 losses)
+- **Expectancy**: -1.994 pts per trade ⚠️
+- **Total P&L**: -462.56 pts / -925.12 GBP
+- **Max Drawdown**: -687.13 pts
+- **Avg Win**: 9.966 pts
+- **Avg Loss**: -28.571 pts
+- **Avg Bars Held**: 1.3
+- **Exit Breakdown**: 159 TP / 67 SL / 6 EOD
+
+#### TP = 12 pts, SL = 30 pts, Spread = 2 pts
+- **Total Trades**: 232
+- **Win Rate**: 65.95% (153 wins / 79 losses)
+- **Expectancy**: -1.875 pts per trade ⚠️
+- **Total P&L**: -435.04 pts / -870.09 GBP
+- **Max Drawdown**: -676.11 pts
+- **Avg Win**: 11.880 pts
+- **Avg Loss**: -28.514 pts
+- **Avg Bars Held**: 1.4
+- **Exit Breakdown**: 151 TP / 73 SL / 8 EOD
+
+### Key Observations
+
+**Strategy Performance:**
+- ⚠️ **ALL configurations show NEGATIVE expectancy** with current parameters
+- TP=12 performs best (least negative: -1.875 pts/trade vs -4.418 for TP=5)
+- Win rates 66-72% are decent but insufficient to overcome large losses
+- **Risk/Reward imbalance**: Avg loss (28-29 pts) >> Avg win (5-12 pts)
+
+**Why the Strategy Struggles:**
+1. **Spread impact**: 2 pts spread on GERMANY40 is significant relative to 5-10 pt TP
+2. **Large stop loss**: 30 pt SL vs 5-12 pt TP creates poor risk/reward (1:6 to 1:2.5 ratio)
+3. **Market noise**: RSI-2 on 30-min bars generates many false signals
+4. **No look-ahead bias**: Realistic entry timing reduces opportunities
+
+**Potential Improvements to Explore:**
+- Reduce stop loss to 10-15 pts for better risk/reward
+- Increase TP to 15-20 pts to improve payoff ratio
+- Tighten oversold threshold (e.g., RSI < 5 instead of < 10)
+- Add trend filter (only trade in direction of longer-term trend)
+- Test on markets with lower spread (US500 has 0.6 pt spread vs GERMANY40's 2 pts)
+- Consider position sizing based on volatility
+
+**Comparison: Unrealistic vs Realistic Results**
+
+| Metric | Old (Unrealistic) TP=10 | New (Realistic) TP=10 | Difference |
+|--------|------------------------|---------------------|------------|
+| Total Trades | 246 | 232 | -14 trades |
+| Win Rate | 90.65% | 68.97% | -21.68% |
+| Expectancy | +6.222 pts | -1.994 pts | -8.216 pts |
+| Total P&L | +1,530.51 pts | -462.56 pts | **-1,993 pts** |
+
+The unrealistic backtest was showing **false profitability** due to look-ahead bias and improper spread modeling.
+
 ## Support and References
 
 ### IG API Documentation
@@ -523,6 +640,47 @@ Possible reasons:
 This project is provided as-is for educational and research purposes.
 
 ## Changelog
+
+### v1.2.0 - Realistic Backtest Modeling (2025-11-06)
+
+- **CRITICAL FIX: Eliminated look-ahead bias in backtest**
+  - Previous version entered at same bar as signal (unrealistic)
+  - Now enters at NEXT bar's open after signal (realistic)
+  - This is a MAJOR fix that significantly impacts results
+- **Fixed spread modeling in backtest**
+  - Entry at ask price: `open + spread/2`
+  - Exit at bid prices: TP check uses `high - spread/2`, SL check uses `low - spread/2`
+  - Previously checked against mid prices (overstated profits)
+- **Realistic P&L calculation**
+  - Properly accounts for entry/exit spreads
+  - TP exits now achieve exact TP points (not TP + spread)
+- **Updated backtest results with realistic modeling**
+  - GERMANY40 2024: Strategy shows NEGATIVE expectancy with current parameters
+  - Identified need for better risk/reward ratio (30pt SL vs 5-12pt TP is poor)
+  - Added comparison table showing unrealistic vs realistic results
+  - Previous results were inflated by ~2,000 pts due to biases
+- **Documentation improvements**
+  - Added detailed explanation of backtest modeling assumptions
+  - Added strategy improvement suggestions
+  - Enhanced changelog with technical details
+
+### v1.1.0 - Wilder's RSI Implementation (2025-11-06)
+
+- **Fixed RSI calculation** to use Wilder's exponential smoothing method
+  - Now matches IG platform, TradingView, MT4, and other professional platforms
+  - Previously used simple moving average (less accurate)
+  - Exponential smoothing incorporates ALL historical price data with decay
+- **Added historical data pre-loading** from IG API at startup
+  - Fetches 50 candles for accurate RSI from the beginning
+  - Graceful fallback if API limits exceeded (cold start mode)
+  - Configurable via `preload_candles` in config.yaml
+- **Multi-market support enhancements**
+  - Enabled GERMANY40 configuration in config.yaml
+  - Verified backtest results with corrected RSI method
+- **Documentation improvements**
+  - Added RSI calculation method explanation
+  - Added backtest performance results
+  - Enhanced CSV format documentation
 
 ### v1.0.0 - Initial Release
 
