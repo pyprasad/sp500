@@ -25,8 +25,8 @@ def parse_args():
     parser.add_argument(
         '--tp',
         type=float,
-        required=True,
-        help='Take profit in points (e.g., 5 or 10)'
+        default=None,
+        help='Take profit in points (e.g., 5 or 10). If not specified, uses take_profits_pts from config'
     )
 
     parser.add_argument(
@@ -144,6 +144,12 @@ def main():
         if args.skip_first is not None:
             config['no_trade_first_minutes'] = args.skip_first
 
+        # Get take profit: CLI overrides config
+        tp_pts = args.tp if args.tp is not None else base_config.get('take_profits_pts')
+        if tp_pts is None:
+            print("Error: No take profit specified. Use --tp or set take_profits_pts in config.yaml")
+            sys.exit(1)
+
     except Exception as e:
         print(f"Error loading config: {e}")
         sys.exit(1)
@@ -158,7 +164,7 @@ def main():
     logger.info(f"RSI period: {config.get('rsi_period', 2)}, oversold threshold: {config.get('oversold', 3.0)}")
     logger.info(f"Timezone: {config.get('tz', 'Unknown')}")
     logger.info(f"Session: {config.get('session_open', 'Unknown')} - {config.get('session_close', 'Unknown')}")
-    logger.info(f"Starting backtest with TP={args.tp} pts, SL={config['stop_loss_pts']} pts, Spread={config.get('spread_assumption_pts', 0.6)} pts")
+    logger.info(f"Starting backtest with TP={tp_pts} pts, SL={config['stop_loss_pts']} pts, Spread={config.get('spread_assumption_pts', 0.6)} pts")
     logger.info(f"Data path: {args.data_path}")
     logger.info(f"Output directory: {args.out}")
 
@@ -179,8 +185,8 @@ def main():
         logger.info(f"Loaded {len(df)} bars from {df['timestamp'].min()} to {df['timestamp'].max()}")
 
         # Run backtest
-        logger.info(f"Running backtest with TP={args.tp} pts...")
-        trades = engine.run_backtest(df, args.tp)
+        logger.info(f"Running backtest with TP={tp_pts} pts...")
+        trades = engine.run_backtest(df, tp_pts)
 
         logger.info(f"Backtest complete. Total trades: {len(trades)}")
 
@@ -189,7 +195,7 @@ def main():
             reporter.print_trades_detail(trades)
 
         # Generate reports
-        reporter.generate_reports(trades, args.tp, config.get('stop_loss_pts'))
+        reporter.generate_reports(trades, tp_pts, config.get('stop_loss_pts'))
 
     except Exception as e:
         logger.error(f"Backtest failed: {e}", exc_info=True)

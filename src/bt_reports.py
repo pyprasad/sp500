@@ -85,15 +85,32 @@ class BacktestReporter:
     def _generate_summary(self, trades_df: pd.DataFrame) -> Dict[str, Any]:
         """Generate summary metrics."""
         total_trades = len(trades_df)
+
+        # Count exits by reason
+        tp_exits = len(trades_df[trades_df['exit_reason'] == 'TP'])
+        sl_exits = len(trades_df[trades_df['exit_reason'] == 'SL'])
+        eod_exits = len(trades_df[trades_df['exit_reason'] == 'EOD'])
+
+        # Separate EOD exits into profitable and unprofitable
+        eod_trades = trades_df[trades_df['exit_reason'] == 'EOD']
+        eod_profitable = len(eod_trades[eod_trades['pnl_pts'] > 0])
+        eod_breakeven = len(eod_trades[eod_trades['pnl_pts'] == 0])
+        eod_losses = len(eod_trades[eod_trades['pnl_pts'] < 0])
+
+        # Define wins/losses more accurately
+        # TRUE WINS: Only TP exits (hit target)
+        # LOSSES: SL exits + losing EOD exits
+        # Note: Profitable EOD exits are not "wins" - they just didn't hit SL
+        num_wins = tp_exits  # Only TP = true win
+        num_losses = sl_exits + eod_losses  # SL + losing EOD = losses
+
+        # For avg win/loss calculation, include all profitable/unprofitable trades
         winning_trades = trades_df[trades_df['pnl_pts'] > 0]
         losing_trades = trades_df[trades_df['pnl_pts'] < 0]
 
-        num_wins = len(winning_trades)
-        num_losses = len(losing_trades)
-
         win_rate = (num_wins / total_trades * 100) if total_trades > 0 else 0.0
-        avg_win_pts = winning_trades['pnl_pts'].mean() if num_wins > 0 else 0.0
-        avg_loss_pts = losing_trades['pnl_pts'].mean() if num_losses > 0 else 0.0
+        avg_win_pts = winning_trades['pnl_pts'].mean() if len(winning_trades) > 0 else 0.0
+        avg_loss_pts = losing_trades['pnl_pts'].mean() if len(losing_trades) > 0 else 0.0
 
         payoff_ratio = abs(avg_win_pts / avg_loss_pts) if avg_loss_pts != 0 else 0.0
         expectancy_pts = trades_df['pnl_pts'].mean() if total_trades > 0 else 0.0
@@ -108,10 +125,6 @@ class BacktestReporter:
         max_drawdown_pts = drawdown.min()
 
         avg_bars_held = trades_df['bars_held'].mean()
-
-        eod_exits = len(trades_df[trades_df['exit_reason'] == 'EOD'])
-        tp_exits = len(trades_df[trades_df['exit_reason'] == 'TP'])
-        sl_exits = len(trades_df[trades_df['exit_reason'] == 'SL'])
 
         summary = {
             'trades': total_trades,
@@ -128,7 +141,9 @@ class BacktestReporter:
             'avg_bars_held': round(avg_bars_held, 1),
             'tp_exits': tp_exits,
             'sl_exits': sl_exits,
-            'eod_exits': eod_exits
+            'eod_exits': eod_exits,
+            'eod_profitable': eod_profitable,
+            'eod_losses': eod_losses
         }
 
         return summary
@@ -152,9 +167,11 @@ class BacktestReporter:
         print(f"Avg Bars Held:       {summary['avg_bars_held']:.1f}")
         print(f"-" * 60)
         print(f"Exit Reasons:")
-        print(f"  TP:                {summary['tp_exits']}")
-        print(f"  SL:                {summary['sl_exits']}")
-        print(f"  EOD:               {summary['eod_exits']}")
+        print(f"  TP:                {summary['tp_exits']} (target hit)")
+        print(f"  SL:                {summary['sl_exits']} (stop hit)")
+        print(f"  EOD Total:         {summary['eod_exits']}")
+        print(f"    EOD Profitable:  {summary.get('eod_profitable', 0)} (closed early with profit)")
+        print(f"    EOD Losses:      {summary.get('eod_losses', 0)} (closed early at loss)")
         print(f"{'='*60}\n")
 
     def print_trades_detail(self, trades: List[Dict[str, Any]], max_trades: int = 50):

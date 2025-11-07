@@ -175,7 +175,8 @@ class LiveTrader:
             candles = historical.fetch_historical_candles(
                 epic=self.config.get('epic'),
                 resolution=resolution,
-                num_points=preload_candles
+                num_points=preload_candles,
+                market_name=self.config.get('market_name')
             )
 
             if not candles:
@@ -352,8 +353,8 @@ def parse_args():
     parser.add_argument(
         '--tp',
         type=float,
-        required=True,
-        help='Take profit in points (e.g., 5 or 10)'
+        default=None,
+        help='Take profit in points (e.g., 5 or 10). If not specified, uses take_profits_pts from config'
     )
 
     parser.add_argument(
@@ -404,14 +405,26 @@ def main():
         if args.timeframe is not None:
             config['timeframe_sec'] = args.timeframe
 
-        # Print selected market info
+        # Get take profit: CLI overrides config
+        tp_pts = args.tp if args.tp is not None else base_config.get('take_profits_pts')
+        if tp_pts is None:
+            print("Error: No take profit specified. Use --tp or set take_profits_pts in config.yaml")
+            sys.exit(1)
+
+        # Get market name
         market_name = args.market if args.market else base_config.get('default_market', 'US500')
+
+        # Add market name to config for historical data naming
+        config['market_name'] = market_name
+
+        # Print selected market info
         print(f"Trading market: {market_name} ({config.get('symbol', 'Unknown')})")
         print(f"EPIC: {config.get('epic', 'Unknown')}")
         print(f"Timeframe: {config.get('timeframe_sec', 1800)}s")
         print(f"RSI period: {config.get('rsi_period', 2)}")
         print(f"Timezone: {config.get('tz', 'Unknown')}")
         print(f"Session: {config.get('session_open', 'Unknown')} - {config.get('session_close', 'Unknown')}")
+        print(f"Take Profit: {tp_pts} pts")
         print("")
 
     except Exception as e:
@@ -419,7 +432,7 @@ def main():
         sys.exit(1)
 
     # Create trader
-    trader = LiveTrader(config, args.tp)
+    trader = LiveTrader(config, tp_pts)
 
     # Setup signal handlers
     def signal_handler(sig, frame):

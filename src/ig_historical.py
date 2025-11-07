@@ -2,6 +2,8 @@
 
 import logging
 import requests
+import csv
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 import pytz
@@ -26,7 +28,8 @@ class IGHistoricalData:
         self,
         epic: str,
         resolution: str,
-        num_points: int = 50
+        num_points: int = 50,
+        market_name: str = None
     ) -> List[Dict[str, Any]]:
         """
         Fetch historical OHLC candles from IG API.
@@ -35,6 +38,7 @@ class IGHistoricalData:
             epic: Instrument EPIC code (e.g., IX.D.SPTRD.DAILY.IP)
             resolution: Candle resolution (MINUTE_30, HOUR, DAY, etc.)
             num_points: Number of historical candles to fetch (default 50)
+            market_name: Market name for file naming (e.g., GERMANY40, US500)
 
         Returns:
             List of candle dictionaries with timestamp, open, high, low, close, volume
@@ -79,6 +83,10 @@ class IGHistoricalData:
                     f"Historical data allowance: {allowance.get('remainingAllowance', 'N/A')} / "
                     f"{allowance.get('totalAllowance', 'N/A')} remaining"
                 )
+
+            # Save candles to CSV for future reference
+            if candles:
+                self._save_to_csv(candles, epic, resolution, market_name)
 
             return candles
 
@@ -229,3 +237,59 @@ class IGHistoricalData:
             return 'MINUTE_30'
 
         return resolution
+
+    def _save_to_csv(self, candles: List[Dict[str, Any]], epic: str, resolution: str, market_name: str = None) -> None:
+        """
+        Save historical candles to CSV file for future reference.
+
+        File naming: {market_name}_{resolution}.csv (reused on subsequent runs)
+        If file exists, it will be overwritten with fresh data.
+
+        Args:
+            candles: List of candle dictionaries
+            epic: Instrument EPIC code (for logging only)
+            resolution: Candle resolution (e.g., MINUTE_30)
+            market_name: Market name (e.g., GERMANY40, US500). If None, uses sanitized EPIC
+        """
+        try:
+            # Create directory if it doesn't exist
+            data_dir = Path('data/historical')
+            data_dir.mkdir(parents=True, exist_ok=True)
+
+            # Use market name if provided, otherwise sanitize epic
+            if market_name:
+                base_name = market_name
+            else:
+                base_name = epic.replace('.', '_').replace('IX_D_', '').replace('_DAILY_IP', '')
+
+            # Clean filename format: MARKET_RESOLUTION.csv (no timestamp - reuse file)
+            filename = f"{base_name}_{resolution}.csv"
+            filepath = data_dir / filename
+
+            # Write to CSV (overwrite if exists)
+            with open(filepath, 'w', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                writer.writeheader()
+
+                for candle in candles:
+                    # Convert timestamp to ISO format string
+                    row = {
+                        'timestamp': candle['timestamp'].isoformat(),
+                        'open': candle['open'],
+                        'high': candle['high'],
+                        'low': candle['low'],
+                        'close': candle['close'],
+                        'volume': candle['volume']
+                    }
+                    writer.writerow(row)
+
+            self.logger.info(f"Saved {len(candles)} historical candles to {filepath}")
+
+            # Log date range for verification
+            if candles:
+                first_date = candles[0]['timestamp'].strftime('%Y-%m-%d %H:%M')
+                last_date = candles[-1]['timestamp'].strftime('%Y-%m-%d %H:%M')
+                self.logger.info(f"Data range: {first_date} to {last_date}")
+
+        except Exception as e:
+            self.logger.warning(f"Failed to save historical candles to CSV: {e}")
