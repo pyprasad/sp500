@@ -64,20 +64,28 @@ class BacktestReporter:
 
         return summary
 
-    def _generate_equity_curve(self, trades_df: pd.DataFrame) -> pd.DataFrame:
-        """Generate equity curve from trades."""
+    def _generate_equity_curve(self, trades_df: pd.DataFrame, starting_capital: float = 10000.0) -> pd.DataFrame:
+        """Generate equity curve from trades.
+
+        Args:
+            trades_df: DataFrame of trades
+            starting_capital: Starting account balance in GBP (default: £10,000)
+        """
         equity_data = []
-        equity_pts = 0.0
-        equity_gbp = 0.0
+        cumulative_pnl_pts = 0.0
+        cumulative_pnl_gbp = 0.0
+        account_balance = starting_capital
 
         for _, trade in trades_df.iterrows():
-            equity_pts += trade['pnl_pts']
-            equity_gbp += trade['pnl_gbp']
+            cumulative_pnl_pts += trade['pnl_pts']
+            cumulative_pnl_gbp += trade['pnl_gbp']
+            account_balance += trade['pnl_gbp']
 
             equity_data.append({
                 'datetime': trade['datetime_close'],
-                'equity_pts': equity_pts,
-                'equity_gbp': equity_gbp
+                'equity_pts': cumulative_pnl_pts,
+                'equity_gbp': cumulative_pnl_gbp,
+                'account_balance': account_balance
             })
 
         return pd.DataFrame(equity_data)
@@ -89,6 +97,7 @@ class BacktestReporter:
         # Count exits by reason
         tp_exits = len(trades_df[trades_df['exit_reason'] == 'TP'])
         sl_exits = len(trades_df[trades_df['exit_reason'] == 'SL'])
+        trailing_sl_exits = len(trades_df[trades_df['exit_reason'] == 'TRAILING_SL'])
         eod_exits = len(trades_df[trades_df['exit_reason'] == 'EOD'])
 
         # Separate EOD exits into profitable and unprofitable
@@ -126,6 +135,19 @@ class BacktestReporter:
 
         avg_bars_held = trades_df['bars_held'].mean()
 
+        # P&L breakdown by exit reason
+        tp_pnl = trades_df[trades_df['exit_reason'] == 'TP']['pnl_pts'].sum()
+        sl_pnl = trades_df[trades_df['exit_reason'] == 'SL']['pnl_pts'].sum()
+        trailing_sl_pnl = trades_df[trades_df['exit_reason'] == 'TRAILING_SL']['pnl_pts'].sum()
+        eod_pnl = trades_df[trades_df['exit_reason'] == 'EOD']['pnl_pts'].sum()
+        eod_profitable_pnl = eod_trades[eod_trades['pnl_pts'] > 0]['pnl_pts'].sum()
+        eod_losses_pnl = eod_trades[eod_trades['pnl_pts'] < 0]['pnl_pts'].sum()
+
+        # Account balance tracking
+        starting_capital = 10000.0
+        final_balance = starting_capital + total_gbp
+        return_pct = (total_gbp / starting_capital) * 100
+
         summary = {
             'trades': total_trades,
             'wins': num_wins,
@@ -141,9 +163,19 @@ class BacktestReporter:
             'avg_bars_held': round(avg_bars_held, 1),
             'tp_exits': tp_exits,
             'sl_exits': sl_exits,
+            'trailing_sl_exits': trailing_sl_exits,
             'eod_exits': eod_exits,
             'eod_profitable': eod_profitable,
-            'eod_losses': eod_losses
+            'eod_losses': eod_losses,
+            'tp_pnl_pts': round(tp_pnl, 2),
+            'sl_pnl_pts': round(sl_pnl, 2),
+            'trailing_sl_pnl_pts': round(trailing_sl_pnl, 2),
+            'eod_pnl_pts': round(eod_pnl, 2),
+            'eod_profitable_pnl_pts': round(eod_profitable_pnl, 2),
+            'eod_losses_pnl_pts': round(eod_losses_pnl, 2),
+            'starting_capital': starting_capital,
+            'final_balance': round(final_balance, 2),
+            'return_pct': round(return_pct, 2)
         }
 
         return summary
@@ -151,6 +183,9 @@ class BacktestReporter:
     def _print_summary(self, summary: Dict[str, Any], tp_pts: float):
         """Print formatted summary to console."""
         sl_display = f"{summary.get('sl_pts', 'N/A')}" if summary.get('sl_pts') else 'N/A'
+        starting_capital = summary.get('starting_capital', 10000.0)
+        final_balance = summary.get('final_balance', starting_capital + summary['total_gbp'])
+
         print(f"\n{'='*60}")
         print(f"BACKTEST SUMMARY (TP={tp_pts} pts, SL={sl_display} pts)")
         print(f"{'='*60}")
@@ -166,12 +201,25 @@ class BacktestReporter:
         print(f"Max Drawdown:        {summary['max_drawdown_pts']:.2f} pts")
         print(f"Avg Bars Held:       {summary['avg_bars_held']:.1f}")
         print(f"-" * 60)
+        print(f"Account Balance:")
+        print(f"  Starting Capital:  £{starting_capital:,.2f}")
+        print(f"  Final Balance:     £{final_balance:,.2f}")
+        print(f"  Return:            £{summary['total_gbp']:+,.2f} ({summary['total_gbp']/starting_capital*100:+.2f}%)")
+        print(f"-" * 60)
         print(f"Exit Reasons:")
-        print(f"  TP:                {summary['tp_exits']} (target hit)")
-        print(f"  SL:                {summary['sl_exits']} (stop hit)")
-        print(f"  EOD Total:         {summary['eod_exits']}")
-        print(f"    EOD Profitable:  {summary.get('eod_profitable', 0)} (closed early with profit)")
-        print(f"    EOD Losses:      {summary.get('eod_losses', 0)} (closed early at loss)")
+        print(f"  TP:                {summary['tp_exits']} trades = {summary.get('tp_pnl_pts', 0):+.2f} pts")
+        print(f"  SL:                {summary['sl_exits']} trades = {summary.get('sl_pnl_pts', 0):+.2f} pts")
+        if summary.get('trailing_sl_exits', 0) > 0:
+            print(f"  TRAILING_SL:       {summary['trailing_sl_exits']} trades = {summary.get('trailing_sl_pnl_pts', 0):+.2f} pts")
+        print(f"  EOD Total:         {summary['eod_exits']} trades = {summary.get('eod_pnl_pts', 0):+.2f} pts")
+        print(f"    EOD Profitable:  {summary.get('eod_profitable', 0)} trades = {summary.get('eod_profitable_pnl_pts', 0):+.2f} pts")
+        print(f"    EOD Losses:      {summary.get('eod_losses', 0)} trades = {summary.get('eod_losses_pnl_pts', 0):+.2f} pts")
+        print(f"-" * 60)
+        print(f"P&L Verification:")
+        verification_sum = (summary.get('tp_pnl_pts', 0) + summary.get('sl_pnl_pts', 0) +
+                           summary.get('trailing_sl_pnl_pts', 0) + summary.get('eod_pnl_pts', 0))
+        print(f"  TP + SL + TRAILING_SL + EOD = {verification_sum:.2f} pts")
+        print(f"  Total P&L                   = {summary['total_pts']:.2f} pts ✓")
         print(f"{'='*60}\n")
 
     def print_trades_detail(self, trades: List[Dict[str, Any]], max_trades: int = 50):

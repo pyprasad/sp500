@@ -29,6 +29,11 @@ class BacktestEngine:
         self.spread_pts = config.get('spread_assumption_pts', 0.6)
         self.size_gbp_per_point = config.get('size_gbp_per_point', 1.0)
 
+        # Trailing stop configuration
+        self.use_trailing_stop = config.get('use_trailing_stop', False)
+        self.trailing_stop_distance = config.get('trailing_stop_distance_pts', 20)
+        self.trailing_stop_activation = config.get('trailing_stop_activation_pts', 20)
+
     def load_data(self, data_path: str) -> pd.DataFrame:
         """
         Load CSV data from file or directory.
@@ -48,6 +53,9 @@ class BacktestEngine:
         elif path.is_dir():
             csv_files = sorted(path.glob('*.csv'))
             for csv_file in csv_files:
+                # Skip tick data files (they contain 'full' in filename)
+                if 'full' in csv_file.name.lower() or 'tick' in csv_file.name.lower():
+                    continue
                 df = pd.read_csv(csv_file)
                 dfs.append(df)
         else:
@@ -189,7 +197,10 @@ class BacktestEngine:
                     'entry_time_local': self.session_clock.localize_timestamp(bar_timestamp),
                     'tp_pts': tp_pts,
                     'sl_pts': self.stop_loss_pts,
-                    'bars_held': 0
+                    'bars_held': 0,
+                    'highest_bid': entry_price,  # Track highest price for trailing stop
+                    'trailing_stop_active': False,  # Trailing stop activation flag
+                    'trailing_sl_level': entry_price - self.stop_loss_pts  # Initialize with fixed SL
                 }
 
                 entry_signal = False  # Reset signal
@@ -201,21 +212,45 @@ class BacktestEngine:
                 exit_price = None
                 exit_reason = None
 
-                # Calculate TP and SL levels (from entry price)
-                # TP: entry + TP points (bid must reach this)
-                # SL: entry - SL points (bid must hit this)
-                tp_level = position['entry_price'] + tp_pts
-                sl_level = position['entry_price'] - self.stop_loss_pts
-
                 # Get bid prices from bar high/low (mid - spread/2)
                 bid_high = row['high'] - (self.spread_pts / 2)
                 bid_low = row['low'] - (self.spread_pts / 2)
+
+                # Calculate TP level (fixed)
+                tp_level = position['entry_price'] + tp_pts
+
+                # Update highest bid reached (for trailing stop)
+                if bid_high > position['highest_bid']:
+                    position['highest_bid'] = bid_high
+
+                # Trailing stop logic (only if enabled in config)
+                if self.use_trailing_stop:
+                    # Calculate profit so far
+                    current_profit = position['highest_bid'] - position['entry_price']
+
+                    # Activate trailing stop if profit threshold reached
+                    if not position['trailing_stop_active'] and current_profit >= self.trailing_stop_activation:
+                        position['trailing_stop_active'] = True
+
+                    # Update trailing SL if active
+                    if position['trailing_stop_active']:
+                        # Trailing SL = highest_bid - trailing_distance
+                        new_trailing_sl = position['highest_bid'] - self.trailing_stop_distance
+                        # Only move SL up, never down
+                        if new_trailing_sl > position['trailing_sl_level']:
+                            position['trailing_sl_level'] = new_trailing_sl
+                else:
+                    # Fixed SL (original behavior)
+                    position['trailing_sl_level'] = position['entry_price'] - self.stop_loss_pts
+
+                # Current SL level (trailing or fixed)
+                sl_level = position['trailing_sl_level']
 
                 # Check SL first (conservative: SL before TP if both hit same bar)
                 # SL hit if bid_low <= sl_level
                 if bid_low <= sl_level:
                     exit_price = sl_level
-                    exit_reason = 'SL'
+                    exit_reason = 'TRAILING_SL' if (self.use_trailing_stop and position['trailing_stop_active']) else 'SL'
                 # Then check TP: TP hit if bid_high >= tp_level
                 elif bid_high >= tp_level:
                     exit_price = tp_level

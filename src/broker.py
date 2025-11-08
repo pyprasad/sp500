@@ -160,3 +160,109 @@ class IGBroker:
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Failed to get current price: {e}")
             return None
+
+    def update_stop_level(self, deal_id: str, new_stop_level: float) -> bool:
+        """
+        Update stop loss level for an existing position.
+
+        Used for trailing stop implementation - updates SL as price moves favorably.
+
+        Args:
+            deal_id: Deal ID of the open position
+            new_stop_level: New stop loss level
+
+        Returns:
+            True if successful, False otherwise
+        """
+        if self.dry_run:
+            self.logger.info(f"[DRY RUN] Would update stop for deal_id={deal_id} to {new_stop_level:.2f}")
+            return True
+
+        if not self.auth.ensure_authenticated():
+            self.logger.error("Not authenticated, cannot update stop level")
+            return False
+
+        url = f"{self.auth.base_url}/positions/otc/{deal_id}"
+        headers = self.auth.get_headers()
+        headers['Version'] = '2'
+        headers['_method'] = 'PUT'
+
+        payload = {
+            "stopLevel": new_stop_level
+        }
+
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            response.raise_for_status()
+
+            self.logger.debug(f"Stop level updated: deal_id={deal_id}, new_sl={new_stop_level:.2f}")
+            return True
+
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Failed to update stop level: {e}")
+            if hasattr(e, 'response') and hasattr(e.response, 'text'):
+                self.logger.error(f"Response: {e.response.text}")
+            return False
+
+    def get_position_by_deal_id(self, deal_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Get position details by deal ID.
+
+        Used for position reconciliation on startup - verify saved position still exists.
+
+        Args:
+            deal_id: Deal ID to query
+
+        Returns:
+            Position details dict or None if not found
+        """
+        if self.dry_run:
+            self.logger.info(f"[DRY RUN] Would query position: deal_id={deal_id}")
+            # Return mock position for dry run
+            return {
+                'deal_id': deal_id,
+                'size': self.size,
+                'direction': 'BUY',
+                'level': 16700.0,
+                'status': 'OPEN'
+            }
+
+        if not self.auth.ensure_authenticated():
+            self.logger.error("Not authenticated, cannot get position")
+            return None
+
+        url = f"{self.auth.base_url}/positions"
+        headers = self.auth.get_headers()
+        headers['Version'] = '2'
+
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+
+            data = response.json()
+            positions = data.get('positions', [])
+
+            # Find position with matching deal ID
+            for position in positions:
+                pos_data = position.get('position', {})
+                if pos_data.get('dealId') == deal_id:
+                    self.logger.info(f"Found position: deal_id={deal_id}")
+                    return {
+                        'deal_id': pos_data.get('dealId'),
+                        'size': pos_data.get('size'),
+                        'direction': pos_data.get('direction'),
+                        'level': pos_data.get('level'),
+                        'stop_level': pos_data.get('stopLevel'),
+                        'limit_level': pos_data.get('limitLevel'),
+                        'status': 'OPEN'
+                    }
+
+            # Position not found
+            self.logger.warning(f"Position not found: deal_id={deal_id}")
+            return None
+
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Failed to get position: {e}")
+            if hasattr(e, 'response') and hasattr(e.response, 'text'):
+                self.logger.error(f"Response: {e.response.text}")
+            return None

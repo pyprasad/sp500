@@ -16,6 +16,8 @@ from .strategy import RSI2Strategy
 from .broker import IGBroker
 from .risk import RiskManager
 from .trade_log import TradeLogger
+from .trade_state import TradeState
+from .trailing_stop_manager import TrailingStopManager
 
 
 class LiveTrader:
@@ -45,6 +47,15 @@ class LiveTrader:
         self.risk_manager = RiskManager(config)
         self.trade_logger = TradeLogger()
 
+        # Trade state persistence (per-market state file from config)
+        state_file = config.get('state_file', 'data/state/trade_state.json')
+        self.trade_state = TradeState(state_file)
+
+        # Trailing stop manager (if enabled)
+        self.trailing_manager = TrailingStopManager(config) if config.get('use_trailing_stop', False) else None
+        if self.trailing_manager:
+            self.logger.info("Trailing stop manager enabled")
+
         self.broker = None
         self.stream = None
         self.candle_builder = None
@@ -55,7 +66,12 @@ class LiveTrader:
 
         # Deal tracking
         self.current_deal_ref = None
+        self.current_deal_id = None
         self.last_trading_date = None
+
+        # Rate limiting for SL updates (prevent API spam)
+        self.last_sl_update_time = 0
+        self.min_sl_update_interval = 2.0  # Minimum 2 seconds between updates
 
     def start(self):
         """Start live trading."""
@@ -89,8 +105,15 @@ class LiveTrader:
         )
         self.stream.subscribe_ticks(self.on_tick)
 
+        # Subscribe to position updates (for instant close notifications)
+        if self.trailing_manager:
+            self.stream.subscribe_positions(self.on_position_update)
+
         # Connect to stream
         self.stream.connect()
+
+        # Position reconciliation (check for saved position from previous crash)
+        self._reconcile_position()
 
         self.logger.info("Live trading started")
         self.running = True
@@ -136,6 +159,12 @@ class LiveTrader:
 
                     self.logger.info(status_msg)
                     last_heartbeat = now
+
+                # Process trailing stop (if enabled and position open)
+                if self.trailing_manager and self.trailing_manager.has_position() and self.current_bid:
+                    should_update, new_sl, _ = self.trailing_manager.on_tick(self.current_bid)
+                    if should_update and new_sl:
+                        self._update_stop_loss(new_sl)
 
                 # Check for position exits
                 if self.strategy.has_position() and self.current_bid:
@@ -296,6 +325,7 @@ class LiveTrader:
 
         if deal_ref:
             self.current_deal_ref = deal_ref
+            # Note: deal_id is different from deal_ref. We'll get deal_id from CONFIRMS stream or query
 
             # Update strategy state
             self.strategy.open_position(
@@ -304,6 +334,27 @@ class LiveTrader:
                 sl_pts=self.config.get('stop_loss_pts', 2.0),
                 timestamp=datetime.now()
             )
+
+            # Save trade state for crash recovery
+            position_state = {
+                'deal_id': deal_ref,  # Will be updated with real deal_id from stream
+                'deal_ref': deal_ref,
+                'entry_price': entry_price,
+                'tp_level': levels['limit_level'],
+                'sl_level': levels['stop_level'],
+                'entry_time': datetime.now().isoformat(),
+                'direction': 'BUY'
+            }
+            self.trade_state.save_position(position_state)
+
+            # Initialize trailing stop manager (if enabled)
+            if self.trailing_manager:
+                self.trailing_manager.on_position_opened(
+                    entry_price=entry_price,
+                    tp_level=levels['limit_level'],
+                    sl_level=levels['stop_level'],
+                    deal_id=deal_ref
+                )
 
     def _check_position_exit(self):
         """Check if position should be exited."""
@@ -341,7 +392,136 @@ class LiveTrader:
                 size=self.config.get('size_gbp_per_point', 1.0)
             )
 
+        # Clear trade state
+        self.trade_state.clear_position()
+
+        # Reset trailing stop manager
+        if self.trailing_manager:
+            self.trailing_manager.on_position_closed()
+
         self.current_deal_ref = None
+        self.current_deal_id = None
+
+    def _reconcile_position(self):
+        """
+        Reconcile position on startup (crash recovery).
+
+        Checks if saved position still exists on IG, restores tracking if yes.
+        """
+        saved_position = self.trade_state.load_position()
+        if not saved_position:
+            return
+
+        deal_id = saved_position.get('deal_id')
+
+        # Query IG to verify position still exists
+        live_position = self.broker.get_position_by_deal_id(deal_id)
+
+        if not live_position:
+            self.logger.warning("Saved position no longer exists on IG - clearing stale state")
+            self.trade_state.clear_position()
+            return
+
+        # Position exists - restore strategy and trailing manager
+        entry_price = saved_position['entry_price']
+        tp_level = saved_position['tp_level']
+        sl_level = saved_position['sl_level']
+
+        self.logger.warning("Restoring position tracking...")
+
+        # Restore strategy state
+        self.strategy.open_position(
+            entry_price=entry_price,
+            tp_pts=self.tp_pts,
+            sl_pts=self.config.get('stop_loss_pts', 2.0),
+            timestamp=datetime.now()
+        )
+
+        self.current_deal_id = deal_id
+        self.current_deal_ref = saved_position.get('deal_ref', deal_id)
+
+        # Restore trailing manager (if enabled)
+        if self.trailing_manager:
+            # Get current price for restoration
+            current_price = self.current_bid
+            if not current_price:
+                # Try to fetch from broker if not available yet
+                price_data = self.broker.get_current_price()
+                if price_data:
+                    current_price = price_data['bid']
+                else:
+                    # Fall back to entry price if we can't get current price
+                    current_price = entry_price
+                    self.logger.warning("Using entry price for trailing restoration (current price unavailable)")
+
+            self.trailing_manager.restore_position(saved_position, current_price)
+
+        self.logger.warning("✓ Position restored successfully")
+
+    def _update_stop_loss(self, new_sl_level: float):
+        """
+        Update stop loss level via broker API.
+
+        Args:
+            new_sl_level: New stop loss level
+        """
+        if not self.current_deal_id:
+            self.logger.warning("Cannot update SL: no deal_id available")
+            return
+
+        # Rate limiting: prevent API spam
+        now = time.time()
+        if (now - self.last_sl_update_time) < self.min_sl_update_interval:
+            self.logger.debug(f"Skipping SL update (rate limited): {new_sl_level:.2f}")
+            return
+
+        success = self.broker.update_stop_level(self.current_deal_id, new_sl_level)
+
+        if success:
+            self.logger.info(f"✓ Trailing SL updated: {new_sl_level:.2f}")
+            self.last_sl_update_time = now
+        else:
+            self.logger.error(f"✗ Failed to update trailing SL to {new_sl_level:.2f}")
+
+    def on_position_update(self, update_type: str, data: str):
+        """
+        Handle position update from streaming API.
+
+        Args:
+            update_type: Type of update (CONFIRMS, OPU, WOU)
+            data: Update data (JSON string)
+        """
+        try:
+            import json
+            update_dict = json.loads(data)
+
+            # Handle deal confirmation (get real deal_id)
+            if update_type == 'CONFIRMS':
+                deal_ref = update_dict.get('dealReference')
+                deal_id = update_dict.get('dealId')
+                status = update_dict.get('dealStatus')
+
+                if deal_ref == self.current_deal_ref:
+                    if status == 'ACCEPTED':
+                        self.current_deal_id = deal_id
+                        self.logger.info(f"Deal confirmed: deal_id={deal_id}")
+                    else:
+                        self.logger.error(f"Deal rejected: {status} - {update_dict.get('reason', 'Unknown')}")
+
+            # Handle position update (OPU) - check for closes
+            elif update_type == 'OPU':
+                deal_id = update_dict.get('dealId')
+                status = update_dict.get('status')
+
+                if deal_id == self.current_deal_id and status in ['DELETED', 'CLOSED']:
+                    self.logger.info(f"Position closed via stream: deal_id={deal_id}, status={status}")
+                    # Position closed by IG (TP/SL hit) - update local state
+                    if self.strategy.has_position():
+                        exit_price = update_dict.get('level', self.current_bid)
+                        self._close_position(exit_price, 'BROKER_CLOSE')
+
+        except Exception as e:
+            self.logger.error(f"Error processing position update: {e}", exc_info=True)
 
 
 def parse_args():

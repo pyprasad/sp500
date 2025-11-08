@@ -42,9 +42,11 @@ class IGStream:
         # Add connection status listener
         self._add_connection_listener()
 
-        # Subscription
-        self.subscription: Optional[Subscription] = None
+        # Subscriptions
+        self.market_subscription: Optional[Subscription] = None
+        self.trade_subscription: Optional[Subscription] = None
         self.tick_callback: Optional[Callable] = None
+        self.position_callback: Optional[Callable] = None
 
     def _add_connection_listener(self):
         """Add listener to monitor connection status."""
@@ -76,21 +78,21 @@ class IGStream:
         items = [f"MARKET:{self.epic}"]
         fields = ["BID", "OFFER", "UPDATE_TIME"]
 
-        self.subscription = Subscription(
+        self.market_subscription = Subscription(
             mode="MERGE",
             items=items,
             fields=fields
         )
 
         # Set up listener
-        self.subscription.addListener(self._create_listener())
+        self.market_subscription.addListener(self._create_tick_listener())
 
         # Subscribe
-        self.client.subscribe(self.subscription)
+        self.client.subscribe(self.market_subscription)
         self.logger.info(f"Subscribed to {self.epic} tick data")
 
-    def _create_listener(self):
-        """Create subscription listener."""
+    def _create_tick_listener(self):
+        """Create tick subscription listener."""
 
         class TickListener:
             def __init__(self, callback, logger):
@@ -133,6 +135,78 @@ class IGStream:
 
         return TickListener(self.tick_callback, self.logger)
 
+    def subscribe_positions(self, callback: Callable):
+        """
+        Subscribe to position updates (OPU, CONFIRMS, WOU).
+
+        Args:
+            callback: Function to call with position update data
+        """
+        self.position_callback = callback
+
+        # Create subscription for TRADE data
+        items = [f"TRADE:{self.account_id}"]
+        fields = ["CONFIRMS", "OPU", "WOU"]
+
+        self.trade_subscription = Subscription(
+            mode="DISTINCT",
+            items=items,
+            fields=fields
+        )
+
+        # Set up listener
+        self.trade_subscription.addListener(self._create_position_listener())
+
+        # Subscribe
+        self.client.subscribe(self.trade_subscription)
+        self.logger.info(f"Subscribed to position updates for account {self.account_id}")
+
+    def _create_position_listener(self):
+        """Create position subscription listener."""
+
+        class PositionListener:
+            def __init__(self, callback, logger):
+                self.callback = callback
+                self.logger = logger
+
+            def onItemUpdate(self, update):
+                """Handle position update."""
+                try:
+                    # Get update type and data
+                    confirms = update.getValue("CONFIRMS")
+                    opu = update.getValue("OPU")
+                    wou = update.getValue("WOU")
+
+                    # Log the raw update
+                    self.logger.debug(f"Position update: CONFIRMS={confirms}, OPU={opu}, WOU={wou}")
+
+                    # Parse and forward to callback
+                    if confirms:
+                        self.logger.info(f"Deal confirmation received: {confirms}")
+                        self.callback('CONFIRMS', confirms)
+
+                    if opu:
+                        self.logger.info(f"Position update (OPU): {opu}")
+                        self.callback('OPU', opu)
+
+                    if wou:
+                        self.logger.info(f"Working order update (WOU): {wou}")
+                        self.callback('WOU', wou)
+
+                except Exception as e:
+                    self.logger.error(f"Error processing position update: {e}", exc_info=True)
+
+            def onSubscription(self):
+                self.logger.info("✓ Position subscription confirmed - listening for updates...")
+
+            def onUnsubscription(self):
+                self.logger.info("✗ Unsubscribed from position updates")
+
+            def onSubscriptionError(self, code, message):
+                self.logger.error(f"✗ Position subscription ERROR {code}: {message}")
+
+        return PositionListener(self.position_callback, self.logger)
+
     def connect(self):
         """Connect to Lightstreamer."""
         self.logger.info("Connecting to Lightstreamer...")
@@ -140,8 +214,11 @@ class IGStream:
 
     def disconnect(self):
         """Disconnect from Lightstreamer."""
-        if self.subscription:
-            self.client.unsubscribe(self.subscription)
+        if self.market_subscription:
+            self.client.unsubscribe(self.market_subscription)
+
+        if self.trade_subscription:
+            self.client.unsubscribe(self.trade_subscription)
 
         self.client.disconnect()
         self.logger.info("Disconnected from Lightstreamer")
