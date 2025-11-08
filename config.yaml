@@ -14,7 +14,7 @@ trailing_stop_activation_pts: 25  # Activate trailing after this much profit (0 
 size_gbp_per_point: 2.0
 only_long: true
 one_position_at_a_time: true
-dry_run: true
+dry_run: false
 log_level: "INFO"
 
 # Historical data pre-loading (for accurate RSI at startup)
