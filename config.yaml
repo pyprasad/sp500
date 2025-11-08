@@ -11,6 +11,20 @@ use_trailing_stop: true  # Set to true to enable trailing stop (BEST: activate=2
 trailing_stop_distance_pts: 10  # Distance in points behind highest price reached
 trailing_stop_activation_pts: 25  # Activate trailing after this much profit (0 = activate immediately)
 
+# EOD exit policy (End-of-Day position management)
+force_eod_exit: true  # true = close all positions by EOD (conservative), false = allow overnight holds
+max_hold_days: 0  # Maximum days to hold position (0 = unlimited, recommend 3-5 for safety)
+
+# Overnight funding charges (for positions held overnight)
+overnight_funding_rate_pct: 0.035  # Annual funding rate (3.5% default, check IG platform for current rates)
+# Note: Rate varies by market. For DAX: ~3.5% = ~0.96 pts/day
+
+# Spread monitoring and safety
+log_spreads: true  # Enable spread logging to CSV for analysis
+spread_log_interval_sec: 300  # Log spread every 5 minutes (medium frequency)
+spread_log_path: "data/spreads"  # Directory for spread log files
+max_entry_spread_pts: 4.0  # Refuse entry if spread exceeds this (safety check, 2x normal spread)
+
 size_gbp_per_point: 2.0
 only_long: true
 one_position_at_a_time: true
@@ -39,7 +53,9 @@ markets:
     session_open: "09:00"
     session_close: "17:30"
     no_trade_first_minutes: 30
-    spread_assumption_pts: 2
+    spread_assumption_pts: 2.0  # Normal market hours spread
+    off_hours_spread_multiplier: 2.5  # Off-hours spread = normal × 2.5 (moderate assumption)
+    overnight_funding_rate_pct: 0.035  # 3.5% annual (~0.96 pts/day for DAX)
     state_file: "data/state/trade_state_GERMANY40.json"  # Per-market state file
 
 # Default market (used if --market not specified)

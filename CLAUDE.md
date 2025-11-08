@@ -7,14 +7,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 RSI-2 rebound long strategy for multiple markets (US500, GERMANY40, etc.) on IG Demo with offline backtesting from local CSVs.
 
 **Strategy rules:**
-- RSI (default period = 2) with oversold threshold = 3
-- Enter long when RSI crosses up through 3 after being at/under 3
+- RSI (default period = 2) with oversold threshold = 5
+- Enter long when RSI crosses up through threshold after being at/under threshold
 - Configurable timeframes (default: 30-minute bars)
 - Market-specific hours and timezones
-- No trading first 30 minutes after session open, flat by EOD
-- Test two configs: TP = 5 pts and TP = 10 pts
-- SL = 2.0 pts (configurable)
-- Market-specific spread assumptions
+- No trading first 30 minutes after session open
+- **EOD policy**: Configurable (force exit or allow overnight holds)
+- **Trailing stop**: Optional (activation=25 pts, distance=10 pts → +1,244 pts in backtest!)
+- TP = 40 pts, SL = 100 pts (configurable)
+- Market-specific spread assumptions (with off-hours multiplier)
+- **Overnight charges**: Simulated in backtest (percentage-based)
 - One position at a time
 
 **Supported Markets:**
@@ -143,13 +145,115 @@ data/
   candles/       # Live 30m bars
   trades/        # Live trade log
   backtest/      # Local 30m CSVs (timestamp, open, high, low, close, volume)
+  spreads/       # Spread monitoring logs (BID/OFFER spread over time)
+  state/         # Trade state persistence (crash recovery)
 reports/
   backtest/      # Backtest results (trades, equity, summary per TP variant)
 ```
+
+## EOD Exit Policy & Overnight Positions
+
+### Configuration
+Control whether positions are forced to close at end-of-day or allowed to hold overnight:
+
+```yaml
+# config.yaml
+force_eod_exit: true   # true = close by EOD (conservative), false = allow overnight
+max_hold_days: 0       # Max days to hold (0 = unlimited, e.g., 3-5 for safety)
+```
+
+### Overnight Funding Charges
+When positions are held overnight, funding charges are applied (simulated in backtest, real in live trading):
+
+```yaml
+# Global default (can be overridden per market)
+overnight_funding_rate_pct: 0.035  # 3.5% annual (~0.96 pts/day for DAX @16700)
+
+# Market-specific override
+markets:
+  GERMANY40:
+    overnight_funding_rate_pct: 0.035  # Check IG platform for current rates
+```
+
+**Calculation**: `Daily charge = (Entry price × Annual rate × Days held) / 365`
+
+### Off-Hours Spread Simulation
+Spreads widen during off-hours (nights/weekends). Backtest simulates this:
+
+```yaml
+markets:
+  GERMANY40:
+    spread_assumption_pts: 2.0  # Normal market hours spread
+    off_hours_spread_multiplier: 2.5  # Off-hours spread = 2.0 × 2.5 = 5.0 pts
+```
+
+### Testing EOD vs Overnight
+Compare results with different EOD policies:
+
+```bash
+# Test 1: Force EOD exit (current behavior, conservative)
+# config.yaml: force_eod_exit: true
+python -m src.backtest --data-path data/backtest --market GERMANY40 --tp 40 \
+  --out reports/backtest/eod_exit
+
+# Test 2: Allow overnight holds (higher profit potential, higher risk)
+# config.yaml: force_eod_exit: false
+python -m src.backtest --data-path data/backtest --market GERMANY40 --tp 40 \
+  --out reports/backtest/overnight_allowed
+
+# Compare results:
+# - Total P&L (net of overnight charges)
+# - Win rate
+# - Avg days held
+# - Total overnight charges paid
+# - Max drawdown
+```
+
+**Key metrics in reports:**
+- `Avg Days Held`: Average number of days positions were held
+- `Total Overnight Charges`: Total funding charges paid (pts)
+- `Positions Held Overnight`: Count of positions held >1 day
+
+## Spread Monitoring & Safety
+
+### Real-Time Spread Logging
+Monitor and log BID/OFFER spreads during live trading:
+
+```yaml
+log_spreads: true  # Enable spread monitoring
+spread_log_interval_sec: 300  # Log every 5 minutes (medium frequency)
+spread_log_path: "data/spreads"  # Output directory
+max_entry_spread_pts: 4.0  # Safety: refuse entry if spread > 4 pts (2x normal)
+```
+
+**Spread log format** (`data/spreads/IX.D.DAX.DAILY.IP_spread_log.csv`):
+```csv
+timestamp,bid,offer,spread_pts,market_open,notes
+2025-11-08 09:00:00,16700.0,16702.0,2.0,true,market_open
+2025-11-08 12:30:15,16720.5,16722.5,2.0,true,scheduled_log
+2025-11-08 17:30:00,16735.0,16737.0,2.0,true,market_close
+2025-11-08 18:00:00,16735.0,16740.0,5.0,false,wide_spread_warning_5.00pts
+```
+
+### Entry Safety Check
+Spread monitor blocks entries if spread too wide (prevents bad fills during volatility/news):
+
+- Configured via `max_entry_spread_pts` (default: 4.0 pts = 2x normal for DAX)
+- Applies even during market hours (safety during news spikes)
+- Logs warning: `Entry blocked: spread 5.50 pts exceeds max 4.0 pts`
+
+### Use Cases for Spread Data
+1. **Validate assumptions**: Check if `off_hours_spread_multiplier: 2.5` is accurate
+2. **Risk management**: Identify dangerous trading times (wide spreads = higher costs)
+3. **Strategy optimization**: Decide if overnight holds are worth the wider spreads
+4. **Debugging**: Understand why entries were blocked or fills were poor
 
 ## Important Constraints
 
 - **Single position**: Ignore signals while position is open
 - **Deterministic exits**: In backtest, if both TP and SL hit same bar, SL exits first
-- **EOD discipline**: Always flat by 16:00 ET (live) or last bar of session (backtest)
+- **EOD discipline**: Configurable (force_eod_exit: true/false)
+  - `true`: Always flat by session close (conservative, current default)
+  - `false`: Allow overnight holds (test in backtest first!)
 - **No overfitting**: Keep strategy simple, deterministic, and transparent
+- **Spread awareness**: Block entries if spread too wide (max_entry_spread_pts)

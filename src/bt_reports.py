@@ -135,6 +135,16 @@ class BacktestReporter:
 
         avg_bars_held = trades_df['bars_held'].mean()
 
+        # Overnight metrics (if applicable)
+        if 'days_held' in trades_df.columns:
+            avg_days_held = trades_df['days_held'].mean()
+            total_overnight_charges = trades_df['overnight_charges'].sum() if 'overnight_charges' in trades_df.columns else 0.0
+            positions_held_overnight = len(trades_df[trades_df['days_held'] > 0])
+        else:
+            avg_days_held = 0
+            total_overnight_charges = 0.0
+            positions_held_overnight = 0
+
         # P&L breakdown by exit reason
         tp_pnl = trades_df[trades_df['exit_reason'] == 'TP']['pnl_pts'].sum()
         sl_pnl = trades_df[trades_df['exit_reason'] == 'SL']['pnl_pts'].sum()
@@ -175,7 +185,11 @@ class BacktestReporter:
             'eod_losses_pnl_pts': round(eod_losses_pnl, 2),
             'starting_capital': starting_capital,
             'final_balance': round(final_balance, 2),
-            'return_pct': round(return_pct, 2)
+            'return_pct': round(return_pct, 2),
+            # Overnight metrics
+            'avg_days_held': round(avg_days_held, 2),
+            'total_overnight_charges': round(total_overnight_charges, 2),
+            'positions_held_overnight': positions_held_overnight
         }
 
         return summary
@@ -200,6 +214,11 @@ class BacktestReporter:
         print(f"Total P&L:           {summary['total_pts']:.2f} pts / {summary['total_gbp']:.2f} GBP")
         print(f"Max Drawdown:        {summary['max_drawdown_pts']:.2f} pts")
         print(f"Avg Bars Held:       {summary['avg_bars_held']:.1f}")
+        # Show overnight metrics if any positions held overnight
+        if summary.get('avg_days_held', 0) > 0:
+            print(f"Avg Days Held:       {summary['avg_days_held']:.2f}")
+            print(f"Total Overnight Charges: {summary.get('total_overnight_charges', 0):.2f} pts")
+            print(f"Positions Held Overnight: {summary.get('positions_held_overnight', 0)}")
         print(f"-" * 60)
         print(f"Account Balance:")
         print(f"  Starting Capital:  £{starting_capital:,.2f}")

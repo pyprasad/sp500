@@ -84,3 +84,36 @@ class SessionClock:
         """Format datetime in session timezone."""
         dt_local = self.localize_timestamp(dt)
         return dt_local.strftime('%Y-%m-%d %H:%M:%S %Z')
+
+    def is_in_session(self, dt: datetime) -> bool:
+        """
+        Check if timestamp is within session hours (alias for is_session_open).
+
+        Args:
+            dt: Timestamp to check
+
+        Returns:
+            True if within session hours, False otherwise
+        """
+        return self.is_session_open(dt)
+
+    def should_force_eod_exit(self, current_time: datetime, force_eod_exit: bool) -> bool:
+        """
+        Check if position should be forced to exit at EOD.
+
+        Args:
+            current_time: Current timestamp
+            force_eod_exit: Config flag (true = force exit, false = allow overnight)
+
+        Returns:
+            True if should exit at EOD, False if can hold overnight
+        """
+        if not force_eod_exit:
+            return False  # Overnight holds allowed
+
+        # If forcing EOD exit, check if we're approaching session close
+        dt_local = self.localize_timestamp(current_time)
+        current_time_only = dt_local.time()
+
+        # Close positions at or after session close
+        return current_time_only >= self.session_close

@@ -34,6 +34,14 @@ class BacktestEngine:
         self.trailing_stop_distance = config.get('trailing_stop_distance_pts', 20)
         self.trailing_stop_activation = config.get('trailing_stop_activation_pts', 20)
 
+        # EOD exit policy
+        self.force_eod_exit = config.get('force_eod_exit', True)
+        self.max_hold_days = config.get('max_hold_days', 0)
+
+        # Overnight funding configuration
+        self.overnight_funding_rate = config.get('overnight_funding_rate_pct', 0.035)
+        self.off_hours_spread_mult = config.get('off_hours_spread_multiplier', 2.5)
+
     def load_data(self, data_path: str) -> pd.DataFrame:
         """
         Load CSV data from file or directory.
@@ -120,6 +128,41 @@ class BacktestEngine:
 
         return df.reset_index(drop=True)
 
+    def _calculate_overnight_charge(self, entry_price: float, days_held: int) -> float:
+        """
+        Calculate overnight funding charge.
+
+        Formula: (Price × Annual_Rate × Days) / 365
+
+        Args:
+            entry_price: Position entry price
+            days_held: Number of nights held
+
+        Returns:
+            Funding charge in points
+        """
+        if days_held == 0:
+            return 0.0
+
+        daily_rate = self.overnight_funding_rate / 365.0
+        charge_pts = entry_price * daily_rate * days_held
+        return charge_pts
+
+    def _get_spread_for_time(self, timestamp: datetime) -> float:
+        """
+        Get spread based on time (market hours vs off-hours).
+
+        Args:
+            timestamp: Bar timestamp
+
+        Returns:
+            Spread in points
+        """
+        if self.session_clock.is_session_open(timestamp):
+            return self.spread_pts  # Normal market hours spread
+        else:
+            return self.spread_pts * self.off_hours_spread_mult  # Wider off-hours spread
+
     def run_backtest(self, df: pd.DataFrame, tp_pts: float) -> List[Dict[str, Any]]:
         """
         Run backtest on historical data with REALISTIC modeling.
@@ -195,9 +238,12 @@ class BacktestEngine:
                     'entry_price': entry_price,
                     'entry_time': bar_timestamp,
                     'entry_time_local': self.session_clock.localize_timestamp(bar_timestamp),
+                    'entry_date': self.session_clock.localize_timestamp(bar_timestamp).date(),  # For overnight tracking
                     'tp_pts': tp_pts,
                     'sl_pts': self.stop_loss_pts,
                     'bars_held': 0,
+                    'days_held': 0,  # Track days for overnight charges
+                    'overnight_charges_pts': 0.0,  # Accumulated overnight funding charges
                     'highest_bid': entry_price,  # Track highest price for trailing stop
                     'trailing_stop_active': False,  # Trailing stop activation flag
                     'trailing_sl_level': entry_price - self.stop_loss_pts  # Initialize with fixed SL
@@ -209,12 +255,35 @@ class BacktestEngine:
             if position is not None:
                 position['bars_held'] += 1
 
+                # Track overnight holds and charges
+                current_date = self.session_clock.localize_timestamp(bar_timestamp).date()
+                if current_date != position['entry_date']:
+                    # Day changed - calculate days held
+                    days_diff = (current_date - position['entry_date']).days
+                    if days_diff > position['days_held']:
+                        # New overnight period - calculate charges
+                        nights_to_charge = days_diff - position['days_held']
+                        charge = self._calculate_overnight_charge(position['entry_price'], nights_to_charge)
+                        position['overnight_charges_pts'] += charge
+                        position['days_held'] = days_diff
+
+                # Initialize exit variables
                 exit_price = None
                 exit_reason = None
 
+                # Check max hold days limit (if set)
+                if self.max_hold_days > 0 and position['days_held'] >= self.max_hold_days:
+                    # Force exit due to max hold period
+                    exit_price = row['close'] - (self.spread_pts / 2)
+                    exit_reason = 'MAX_HOLD_DAYS'
+
+                # Get current spread (may be wider during off-hours)
+                current_spread = self._get_spread_for_time(bar_timestamp)
+
                 # Get bid prices from bar high/low (mid - spread/2)
-                bid_high = row['high'] - (self.spread_pts / 2)
-                bid_low = row['low'] - (self.spread_pts / 2)
+                # Use current spread instead of fixed spread
+                bid_high = row['high'] - (current_spread / 2)
+                bid_low = row['low'] - (current_spread / 2)
 
                 # Calculate TP level (fixed)
                 tp_level = position['entry_price'] + tp_pts
@@ -256,17 +325,24 @@ class BacktestEngine:
                     exit_price = tp_level
                     exit_reason = 'TP'
 
-                # Check for EOD exit
-                is_eod = self.session_clock.is_eod_bar(bar_timestamp, bar_duration_minutes=30)
-                if exit_price is None and is_eod:
-                    # Exit at close - half spread (bid price)
-                    exit_price = row['close'] - (self.spread_pts / 2)
-                    exit_reason = 'EOD'
+                # Check for EOD exit (respects force_eod_exit flag)
+                if exit_price is None and self.force_eod_exit:
+                    is_eod = self.session_clock.is_eod_bar(bar_timestamp, bar_duration_minutes=30)
+                    if is_eod:
+                        # Exit at close - half spread (bid price)
+                        # Use current spread (may be wider at EOD)
+                        exit_price = row['close'] - (current_spread / 2)
+                        exit_reason = 'EOD'
 
                 # Close position if exit triggered
                 if exit_price is not None:
-                    pnl_pts = exit_price - position['entry_price']
-                    pnl_gbp = pnl_pts * self.size_gbp_per_point
+                    # Calculate P&L before overnight charges
+                    pnl_pts_gross = exit_price - position['entry_price']
+
+                    # Subtract overnight charges from P&L
+                    overnight_charges = position['overnight_charges_pts']
+                    pnl_pts_net = pnl_pts_gross - overnight_charges
+                    pnl_gbp = pnl_pts_net * self.size_gbp_per_point
 
                     trade = {
                         'datetime_open': position['entry_time'],
@@ -278,7 +354,10 @@ class BacktestEngine:
                         'ny_time_close': self.session_clock.localize_timestamp(bar_timestamp).strftime('%Y-%m-%d %H:%M:%S'),
                         'exit_price': exit_price,
                         'exit_reason': exit_reason,
-                        'pnl_pts': pnl_pts,
+                        'pnl_pts': pnl_pts_net,  # Net P&L after overnight charges
+                        'pnl_pts_gross': pnl_pts_gross,  # Gross P&L before charges
+                        'overnight_charges': overnight_charges,  # Overnight funding charges
+                        'days_held': position['days_held'],  # Days position was held
                         'pnl_gbp': pnl_gbp,
                         'bars_held': position['bars_held']
                     }

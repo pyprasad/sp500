@@ -18,6 +18,7 @@ from .risk import RiskManager
 from .trade_log import TradeLogger
 from .trade_state import TradeState
 from .trailing_stop_manager import TrailingStopManager
+from .spread_monitor import SpreadMonitor
 
 
 class LiveTrader:
@@ -55,6 +56,9 @@ class LiveTrader:
         self.trailing_manager = TrailingStopManager(config) if config.get('use_trailing_stop', False) else None
         if self.trailing_manager:
             self.logger.info("Trailing stop manager enabled")
+
+        # Spread monitor (if enabled)
+        self.spread_monitor = SpreadMonitor(config, config.get('epic')) if config.get('log_spreads', True) else None
 
         self.broker = None
         self.stream = None
@@ -170,11 +174,16 @@ class LiveTrader:
                 if self.strategy.has_position() and self.current_bid:
                     self._check_position_exit()
 
-                # Check for EOD exit
+                # Check for EOD exit (respects force_eod_exit flag)
                 if self.strategy.has_position():
-                    if self.strategy.check_eod_exit(datetime.now()):
-                        self.logger.info("EOD - closing position")
-                        self._close_position(self.current_bid, 'EOD')
+                    force_eod = self.config.get('force_eod_exit', True)
+                    if self.strategy.session_clock.should_force_eod_exit(datetime.now(), force_eod):
+                        if force_eod:
+                            self.logger.info("EOD - closing position (force_eod_exit=true)")
+                        else:
+                            self.logger.info("EOD - allowing overnight hold (force_eod_exit=false)")
+                        if force_eod:
+                            self._close_position(self.current_bid, 'EOD')
 
         except KeyboardInterrupt:
             self.logger.info("Received interrupt signal, shutting down...")
@@ -242,6 +251,10 @@ class LiveTrader:
             self.candle_builder.force_complete_candle()
             self.candle_builder.stop_tick_logging()
 
+        # Stop spread monitor
+        if self.spread_monitor:
+            self.spread_monitor.stop()
+
         # Logout
         self.auth.logout()
 
@@ -261,6 +274,11 @@ class LiveTrader:
         """
         self.current_bid = bid
         self.current_ask = ask
+
+        # Monitor spread (non-blocking, uses background thread)
+        if self.spread_monitor:
+            is_market_open = self.strategy.session_clock.is_in_session(datetime.now())
+            self.spread_monitor.on_tick(bid, ask, timestamp, is_market_open)
 
         # Process tick through candle builder
         self.candle_builder.process_tick(bid, ask, timestamp)
@@ -304,6 +322,13 @@ class LiveTrader:
         if not self.current_ask or not self.current_bid:
             self.logger.warning("No current prices available")
             return
+
+        # Check if spread is acceptable for entry
+        if self.spread_monitor:
+            current_spread = self.current_ask - self.current_bid
+            if not self.spread_monitor.is_spread_acceptable_for_entry(current_spread):
+                self.logger.warning(f"Entry blocked: spread {current_spread:.2f} pts too wide")
+                return
 
         # Calculate entry price (ask)
         entry_price = self.risk_manager.calculate_entry_price(
