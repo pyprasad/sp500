@@ -1,0 +1,1421 @@
+17:24:22 - __main__ - INFO - ======================================================================
+17:24:22 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+17:24:22 - __main__ - INFO - ======================================================================
+17:24:22 - __main__ - INFO - Tick Data: data/backtest/germany40_2012/dax_2012_full_scaled.csv
+17:24:22 - __main__ - INFO - Market: GERMANY40
+17:24:22 - __main__ - INFO - TP: 40.0 pts
+17:24:22 - __main__ - INFO - ======================================================================
+17:24:22 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+17:24:22 - __main__ - INFO - Loading tick data...
+17:24:22 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2012/dax_2012_full_scaled.csv...
+17:24:34 - rsi2_strategy.tick_backtest - INFO - Loaded 4,203,553 ticks from 2012-01-19 16:09:15.818000+00:00 to 2012-12-28 18:46:43.466000+00:00
+17:24:34 - __main__ - INFO - Building candles from ticks...
+17:24:34 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+17:24:35 - rsi2_strategy.tick_backtest - INFO - Built 5,089 candles
+17:24:35 - __main__ - INFO - Filtering to session hours...
+17:24:35 - rsi2_strategy.tick_backtest - INFO - Filtered to 4042 bars within session hours
+17:24:35 - __main__ - INFO - Running tick-level backtest...
+17:24:35 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:24:35 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+17:24:35 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:25:29 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:25:29 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 122 trades
+17:25:29 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:25:29 - __main__ - INFO - Generating reports...
+17:25:29 - __main__ - INFO - ======================================================================
+17:25:29 - __main__ - INFO - TICK BACKTEST COMPLETE
+17:25:29 - __main__ - INFO - ======================================================================
+17:25:29 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2012_long
+17:25:29 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2012_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2012_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2012_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        122
+Wins / Losses:       24 / 36
+Win Rate:            19.67%
+Avg Win:             24.080 pts
+Avg Loss:            -37.948 pts
+Payoff Ratio:        0.635
+Expectancy:          5.777 pts
+------------------------------------------------------------
+Total P&L:           704.80 pts / 1409.60 GBP
+Max Drawdown:        -261.87 pts
+Avg Bars Held:       5.0
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,409.60
+  Return:            £+1,409.60 (+14.10%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                24 trades = +960.00 pts
+  SL:                6 trades = -600.00 pts
+  TRAILING_SL:       40 trades = +881.35 pts
+  EOD Total:         52 trades = -536.55 pts
+    EOD Profitable:  22 trades = +229.57 pts
+    EOD Losses:      30 trades = -766.12 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              122 trades = +704.80 pts / +1409.60 GBP
+    Wins:            86 (70.49%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 704.80 pts
+  Total P&L                   = 704.80 pts ✓
+============================================================
+
+17:25:30 - __main__ - INFO - ======================================================================
+17:25:30 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+17:25:30 - __main__ - INFO - ======================================================================
+17:25:30 - __main__ - INFO - Tick Data: data/backtest/germany40_2012/dax_2012_full_scaled.csv
+17:25:30 - __main__ - INFO - Market: GERMANY40
+17:25:30 - __main__ - INFO - TP: 40.0 pts
+17:25:30 - __main__ - INFO - ======================================================================
+17:25:30 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+17:25:30 - __main__ - INFO - Loading tick data...
+17:25:30 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2012/dax_2012_full_scaled.csv...
+17:25:42 - rsi2_strategy.tick_backtest - INFO - Loaded 4,203,553 ticks from 2012-01-19 16:09:15.818000+00:00 to 2012-12-28 18:46:43.466000+00:00
+17:25:42 - __main__ - INFO - Building candles from ticks...
+17:25:42 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+17:25:42 - rsi2_strategy.tick_backtest - INFO - Built 5,089 candles
+17:25:42 - __main__ - INFO - Filtering to session hours...
+17:25:43 - rsi2_strategy.tick_backtest - INFO - Filtered to 4042 bars within session hours
+17:25:43 - __main__ - INFO - Running tick-level backtest...
+17:25:43 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:25:43 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+17:25:43 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:27:17 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:27:17 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 96 trades
+17:27:17 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:27:17 - __main__ - INFO - Generating reports...
+17:27:17 - __main__ - INFO - ======================================================================
+17:27:17 - __main__ - INFO - TICK BACKTEST COMPLETE
+17:27:17 - __main__ - INFO - ======================================================================
+17:27:17 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2012_short
+17:27:17 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2012_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2012_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2012_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        96
+Wins / Losses:       26 / 27
+Win Rate:            27.08%
+Avg Win:             27.442 pts
+Avg Loss:            -81.272 pts
+Payoff Ratio:        0.338
+Expectancy:          -3.134 pts
+------------------------------------------------------------
+Total P&L:           -300.87 pts / -601.75 GBP
+Max Drawdown:        -477.65 pts
+Avg Bars Held:       12.1
+Avg Days Held:       1.05
+Total Overnight Charges: 68.11 pts
+Positions Held Overnight: 47
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,398.25
+  Return:            £-601.75 (-6.02%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                26 trades = +1025.23 pts
+  SL:                27 trades = -2194.36 pts
+  TRAILING_SL:       43 trades = +868.25 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             96 trades = -300.87 pts / -601.75 GBP
+    Wins:            69 (71.88%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -300.88 pts
+  Total P&L                   = -300.87 pts ✓
+============================================================
+
+17:27:18 - __main__ - INFO - ======================================================================
+17:27:18 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+17:27:18 - __main__ - INFO - ======================================================================
+17:27:18 - __main__ - INFO - Tick Data: data/backtest/germany40_2012/dax_2012_full_scaled.csv
+17:27:18 - __main__ - INFO - Market: GERMANY40
+17:27:18 - __main__ - INFO - TP: 40.0 pts
+17:27:18 - __main__ - INFO - ======================================================================
+17:27:18 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+17:27:18 - __main__ - INFO - Loading tick data...
+17:27:18 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2012/dax_2012_full_scaled.csv...
+17:27:30 - rsi2_strategy.tick_backtest - INFO - Loaded 4,203,553 ticks from 2012-01-19 16:09:15.818000+00:00 to 2012-12-28 18:46:43.466000+00:00
+17:27:30 - __main__ - INFO - Building candles from ticks...
+17:27:30 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+17:27:30 - rsi2_strategy.tick_backtest - INFO - Built 5,089 candles
+17:27:30 - __main__ - INFO - Filtering to session hours...
+17:27:30 - rsi2_strategy.tick_backtest - INFO - Filtered to 4042 bars within session hours
+17:27:30 - __main__ - INFO - Running tick-level backtest...
+17:27:30 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:27:30 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+17:27:30 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:31:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:31:03 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 218 trades
+17:31:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+17:31:03 - __main__ - INFO - Generating reports...
+17:31:03 - __main__ - INFO - ======================================================================
+17:31:03 - __main__ - INFO - TICK BACKTEST COMPLETE
+17:31:03 - __main__ - INFO - ======================================================================
+17:31:03 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2012_both
+17:31:03 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2012_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2012_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2012_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        218
+Wins / Losses:       50 / 63
+Win Rate:            22.94%
+Avg Win:             25.577 pts
+Avg Loss:            -56.515 pts
+Payoff Ratio:        0.453
+Expectancy:          1.853 pts
+------------------------------------------------------------
+Total P&L:           403.93 pts / 807.85 GBP
+Max Drawdown:        -536.04 pts
+Avg Bars Held:       8.1
+Avg Days Held:       0.46
+Total Overnight Charges: 68.11 pts
+Positions Held Overnight: 47
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,807.85
+  Return:            £+807.85 (+8.08%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                50 trades = +1985.23 pts
+  SL:                33 trades = -2794.36 pts
+  TRAILING_SL:       83 trades = +1749.60 pts
+  EOD Total:         52 trades = -536.55 pts
+    EOD Profitable:  22 trades = +229.57 pts
+    EOD Losses:      30 trades = -766.12 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              122 trades = +704.80 pts / +1409.60 GBP
+    Wins:            86 (70.49%)
+  SHORT:             96 trades = -300.87 pts / -601.75 GBP
+    Wins:            69 (71.88%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 403.92 pts
+  Total P&L                   = 403.93 pts ✓
+============================================================
+
+17:31:04 - __main__ - INFO - ======================================================================
+17:31:04 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+17:31:04 - __main__ - INFO - ======================================================================
+17:31:04 - __main__ - INFO - Tick Data: data/backtest/germany40_2020/dax_2020_full_scaled.csv
+17:31:04 - __main__ - INFO - Market: GERMANY40
+17:31:04 - __main__ - INFO - TP: 40.0 pts
+17:31:04 - __main__ - INFO - ======================================================================
+17:31:04 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+17:31:04 - __main__ - INFO - Loading tick data...
+17:31:04 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2020/dax_2020_full_scaled.csv...
+18:07:12 - rsi2_strategy.tick_backtest - INFO - Loaded 41,212,738 ticks from 2020-01-01 23:04:33.379000+00:00 to 2020-12-30 23:59:50.175000+00:00
+18:07:12 - __main__ - INFO - Building candles from ticks...
+18:07:12 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+18:07:15 - rsi2_strategy.tick_backtest - INFO - Built 11,325 candles
+18:07:15 - __main__ - INFO - Filtering to session hours...
+18:07:15 - rsi2_strategy.tick_backtest - INFO - Filtered to 4381 bars within session hours
+18:07:15 - __main__ - INFO - Running tick-level backtest...
+18:07:15 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:07:15 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+18:07:15 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:11:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:11:03 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 138 trades
+18:11:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:11:03 - __main__ - INFO - Generating reports...
+18:11:03 - __main__ - INFO - ======================================================================
+18:11:03 - __main__ - INFO - TICK BACKTEST COMPLETE
+18:11:03 - __main__ - INFO - ======================================================================
+18:11:03 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2020_long
+18:11:03 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2020_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2020_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2020_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        138
+Wins / Losses:       25 / 34
+Win Rate:            18.12%
+Avg Win:             24.227 pts
+Avg Loss:            -67.515 pts
+Payoff Ratio:        0.359
+Expectancy:          1.624 pts
+------------------------------------------------------------
+Total P&L:           224.14 pts / 448.29 GBP
+Max Drawdown:        -346.31 pts
+Avg Bars Held:       2.6
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,448.29
+  Return:            £+448.29 (+4.48%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                25 trades = +1000.00 pts
+  SL:                19 trades = -1900.00 pts
+  TRAILING_SL:       72 trades = +1473.05 pts
+  EOD Total:         22 trades = -348.90 pts
+    EOD Profitable:  7 trades = +46.60 pts
+    EOD Losses:      15 trades = -395.50 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              138 trades = +224.14 pts / +448.29 GBP
+    Wins:            104 (75.36%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 224.15 pts
+  Total P&L                   = 224.14 pts ✓
+============================================================
+
+18:11:04 - __main__ - INFO - ======================================================================
+18:11:04 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+18:11:04 - __main__ - INFO - ======================================================================
+18:11:04 - __main__ - INFO - Tick Data: data/backtest/germany40_2020/dax_2020_full_scaled.csv
+18:11:04 - __main__ - INFO - Market: GERMANY40
+18:11:04 - __main__ - INFO - TP: 40.0 pts
+18:11:04 - __main__ - INFO - ======================================================================
+18:11:04 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+18:11:04 - __main__ - INFO - Loading tick data...
+18:11:04 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2020/dax_2020_full_scaled.csv...
+18:13:23 - rsi2_strategy.tick_backtest - INFO - Loaded 41,212,738 ticks from 2020-01-01 23:04:33.379000+00:00 to 2020-12-30 23:59:50.175000+00:00
+18:13:23 - __main__ - INFO - Building candles from ticks...
+18:13:23 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+18:13:26 - rsi2_strategy.tick_backtest - INFO - Built 11,325 candles
+18:13:26 - __main__ - INFO - Filtering to session hours...
+18:13:26 - rsi2_strategy.tick_backtest - INFO - Filtered to 4381 bars within session hours
+18:13:26 - __main__ - INFO - Running tick-level backtest...
+18:13:26 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:13:26 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+18:13:26 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:17:43 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:17:43 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 137 trades
+18:17:43 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:17:43 - __main__ - INFO - Generating reports...
+18:17:43 - __main__ - INFO - ======================================================================
+18:17:43 - __main__ - INFO - TICK BACKTEST COMPLETE
+18:17:43 - __main__ - INFO - ======================================================================
+18:17:43 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2020_short
+18:17:43 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2020_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2020_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2020_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        137
+Wins / Losses:       28 / 27
+Win Rate:            20.44%
+Avg Win:             25.495 pts
+Avg Loss:            -80.462 pts
+Payoff Ratio:        0.317
+Expectancy:          4.613 pts
+------------------------------------------------------------
+Total P&L:           631.95 pts / 1263.90 GBP
+Max Drawdown:        -340.30 pts
+Avg Bars Held:       3.5
+Avg Days Held:       0.26
+Total Overnight Charges: 44.36 pts
+Positions Held Overnight: 23
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,263.90
+  Return:            £+1,263.90 (+12.64%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                28 trades = +1098.33 pts
+  SL:                27 trades = -2172.47 pts
+  TRAILING_SL:       82 trades = +1706.10 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             137 trades = +631.95 pts / +1263.90 GBP
+    Wins:            110 (80.29%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 631.96 pts
+  Total P&L                   = 631.95 pts ✓
+============================================================
+
+18:17:44 - __main__ - INFO - ======================================================================
+18:17:44 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+18:17:44 - __main__ - INFO - ======================================================================
+18:17:44 - __main__ - INFO - Tick Data: data/backtest/germany40_2020/dax_2020_full_scaled.csv
+18:17:44 - __main__ - INFO - Market: GERMANY40
+18:17:44 - __main__ - INFO - TP: 40.0 pts
+18:17:44 - __main__ - INFO - ======================================================================
+18:17:44 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+18:17:44 - __main__ - INFO - Loading tick data...
+18:17:44 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2020/dax_2020_full_scaled.csv...
+18:29:00 - rsi2_strategy.tick_backtest - INFO - Loaded 41,212,738 ticks from 2020-01-01 23:04:33.379000+00:00 to 2020-12-30 23:59:50.175000+00:00
+18:29:00 - __main__ - INFO - Building candles from ticks...
+18:29:00 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+18:29:03 - rsi2_strategy.tick_backtest - INFO - Built 11,325 candles
+18:29:03 - __main__ - INFO - Filtering to session hours...
+18:29:03 - rsi2_strategy.tick_backtest - INFO - Filtered to 4381 bars within session hours
+18:29:03 - __main__ - INFO - Running tick-level backtest...
+18:29:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:29:03 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+18:29:03 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:52:02 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:52:02 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 275 trades
+18:52:02 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:52:02 - __main__ - INFO - Generating reports...
+18:52:02 - __main__ - INFO - ======================================================================
+18:52:02 - __main__ - INFO - TICK BACKTEST COMPLETE
+18:52:02 - __main__ - INFO - ======================================================================
+18:52:02 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2020_both
+18:52:02 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2020_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2020_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2020_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        275
+Wins / Losses:       53 / 61
+Win Rate:            19.27%
+Avg Win:             24.879 pts
+Avg Loss:            -73.246 pts
+Payoff Ratio:        0.340
+Expectancy:          3.113 pts
+------------------------------------------------------------
+Total P&L:           856.10 pts / 1712.19 GBP
+Max Drawdown:        -502.19 pts
+Avg Bars Held:       3.0
+Avg Days Held:       0.13
+Total Overnight Charges: 44.36 pts
+Positions Held Overnight: 23
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,712.19
+  Return:            £+1,712.19 (+17.12%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                53 trades = +2098.33 pts
+  SL:                46 trades = -4072.47 pts
+  TRAILING_SL:       154 trades = +3179.15 pts
+  EOD Total:         22 trades = -348.90 pts
+    EOD Profitable:  7 trades = +46.60 pts
+    EOD Losses:      15 trades = -395.50 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              138 trades = +224.14 pts / +448.29 GBP
+    Wins:            104 (75.36%)
+  SHORT:             137 trades = +631.95 pts / +1263.90 GBP
+    Wins:            110 (80.29%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 856.11 pts
+  Total P&L                   = 856.10 pts ✓
+============================================================
+
+18:52:03 - __main__ - INFO - ======================================================================
+18:52:03 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+18:52:03 - __main__ - INFO - ======================================================================
+18:52:03 - __main__ - INFO - Tick Data: data/backtest/germany40_2021/dax_2021_full_scaled.csv
+18:52:03 - __main__ - INFO - Market: GERMANY40
+18:52:03 - __main__ - INFO - TP: 40.0 pts
+18:52:03 - __main__ - INFO - ======================================================================
+18:52:03 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+18:52:03 - __main__ - INFO - Loading tick data...
+18:52:03 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2021/dax_2021_full_scaled.csv...
+18:53:17 - rsi2_strategy.tick_backtest - INFO - Loaded 22,736,291 ticks from 2021-01-04 00:00:00.569000+00:00 to 2021-12-30 23:59:58.324000+00:00
+18:53:17 - __main__ - INFO - Building candles from ticks...
+18:53:17 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+18:53:18 - rsi2_strategy.tick_backtest - INFO - Built 11,389 candles
+18:53:18 - __main__ - INFO - Filtering to session hours...
+18:53:18 - rsi2_strategy.tick_backtest - INFO - Filtered to 4369 bars within session hours
+18:53:18 - __main__ - INFO - Running tick-level backtest...
+18:53:18 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:53:18 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+18:53:18 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:55:53 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:55:53 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 126 trades
+18:55:53 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:55:53 - __main__ - INFO - Generating reports...
+18:55:53 - __main__ - INFO - ======================================================================
+18:55:53 - __main__ - INFO - TICK BACKTEST COMPLETE
+18:55:53 - __main__ - INFO - ======================================================================
+18:55:53 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2021_long
+18:55:53 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2021_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2021_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2021_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        126
+Wins / Losses:       15 / 36
+Win Rate:            11.90%
+Avg Win:             23.011 pts
+Avg Loss:            -66.165 pts
+Payoff Ratio:        0.348
+Expectancy:          -2.468 pts
+------------------------------------------------------------
+Total P&L:           -310.92 pts / -621.83 GBP
+Max Drawdown:        -554.68 pts
+Avg Bars Held:       3.6
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,378.17
+  Return:            £-621.83 (-6.22%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                15 trades = +600.00 pts
+  SL:                20 trades = -2000.00 pts
+  TRAILING_SL:       65 trades = +1395.59 pts
+  EOD Total:         26 trades = -306.51 pts
+    EOD Profitable:  10 trades = +75.43 pts
+    EOD Losses:      16 trades = -381.94 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              126 trades = -310.92 pts / -621.83 GBP
+    Wins:            90 (71.43%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -310.92 pts
+  Total P&L                   = -310.92 pts ✓
+============================================================
+
+18:55:54 - __main__ - INFO - ======================================================================
+18:55:54 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+18:55:54 - __main__ - INFO - ======================================================================
+18:55:54 - __main__ - INFO - Tick Data: data/backtest/germany40_2021/dax_2021_full_scaled.csv
+18:55:54 - __main__ - INFO - Market: GERMANY40
+18:55:54 - __main__ - INFO - TP: 40.0 pts
+18:55:54 - __main__ - INFO - ======================================================================
+18:55:54 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+18:55:54 - __main__ - INFO - Loading tick data...
+18:55:54 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2021/dax_2021_full_scaled.csv...
+18:57:07 - rsi2_strategy.tick_backtest - INFO - Loaded 22,736,291 ticks from 2021-01-04 00:00:00.569000+00:00 to 2021-12-30 23:59:58.324000+00:00
+18:57:07 - __main__ - INFO - Building candles from ticks...
+18:57:07 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+18:57:09 - rsi2_strategy.tick_backtest - INFO - Built 11,389 candles
+18:57:09 - __main__ - INFO - Filtering to session hours...
+18:57:09 - rsi2_strategy.tick_backtest - INFO - Filtered to 4369 bars within session hours
+18:57:09 - __main__ - INFO - Running tick-level backtest...
+18:57:09 - rsi2_strategy.tick_backtest - INFO - ============================================================
+18:57:09 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+18:57:09 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:00:34 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:00:34 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 120 trades
+19:00:34 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:00:34 - __main__ - INFO - Generating reports...
+19:00:34 - __main__ - INFO - ======================================================================
+19:00:34 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:00:34 - __main__ - INFO - ======================================================================
+19:00:34 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2021_short
+19:00:34 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2021_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2021_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2021_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        120
+Wins / Losses:       33 / 30
+Win Rate:            27.50%
+Avg Win:             27.566 pts
+Avg Loss:            -81.130 pts
+Payoff Ratio:        0.340
+Expectancy:          0.392 pts
+------------------------------------------------------------
+Total P&L:           46.99 pts / 93.98 GBP
+Max Drawdown:        -645.26 pts
+Avg Bars Held:       6.0
+Avg Days Held:       0.44
+Total Overnight Charges: 77.95 pts
+Positions Held Overnight: 32
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,093.98
+  Return:            £+93.98 (+0.94%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                33 trades = +1290.71 pts
+  SL:                30 trades = -2433.91 pts
+  TRAILING_SL:       57 trades = +1190.19 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             120 trades = +46.99 pts / +93.98 GBP
+    Wins:            90 (75.00%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 46.99 pts
+  Total P&L                   = 46.99 pts ✓
+============================================================
+
+19:00:35 - __main__ - INFO - ======================================================================
+19:00:35 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:00:35 - __main__ - INFO - ======================================================================
+19:00:35 - __main__ - INFO - Tick Data: data/backtest/germany40_2021/dax_2021_full_scaled.csv
+19:00:35 - __main__ - INFO - Market: GERMANY40
+19:00:35 - __main__ - INFO - TP: 40.0 pts
+19:00:35 - __main__ - INFO - ======================================================================
+19:00:36 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:00:36 - __main__ - INFO - Loading tick data...
+19:00:36 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2021/dax_2021_full_scaled.csv...
+19:01:53 - rsi2_strategy.tick_backtest - INFO - Loaded 22,736,291 ticks from 2021-01-04 00:00:00.569000+00:00 to 2021-12-30 23:59:58.324000+00:00
+19:01:53 - __main__ - INFO - Building candles from ticks...
+19:01:53 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:01:55 - rsi2_strategy.tick_backtest - INFO - Built 11,389 candles
+19:01:55 - __main__ - INFO - Filtering to session hours...
+19:01:55 - rsi2_strategy.tick_backtest - INFO - Filtered to 4369 bars within session hours
+19:01:55 - __main__ - INFO - Running tick-level backtest...
+19:01:55 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:01:55 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+19:01:55 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:16:54 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:16:54 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 246 trades
+19:16:54 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:16:54 - __main__ - INFO - Generating reports...
+19:16:54 - __main__ - INFO - ======================================================================
+19:16:54 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:16:54 - __main__ - INFO - ======================================================================
+19:16:54 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2021_both
+19:16:54 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2021_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2021_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2021_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        246
+Wins / Losses:       48 / 66
+Win Rate:            19.51%
+Avg Win:             25.288 pts
+Avg Loss:            -72.967 pts
+Payoff Ratio:        0.347
+Expectancy:          -1.073 pts
+------------------------------------------------------------
+Total P&L:           -263.92 pts / -527.85 GBP
+Max Drawdown:        -674.16 pts
+Avg Bars Held:       4.8
+Avg Days Held:       0.22
+Total Overnight Charges: 77.95 pts
+Positions Held Overnight: 32
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,472.15
+  Return:            £-527.85 (-5.28%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                48 trades = +1890.71 pts
+  SL:                50 trades = -4433.91 pts
+  TRAILING_SL:       122 trades = +2585.78 pts
+  EOD Total:         26 trades = -306.51 pts
+    EOD Profitable:  10 trades = +75.43 pts
+    EOD Losses:      16 trades = -381.94 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              126 trades = -310.92 pts / -621.83 GBP
+    Wins:            90 (71.43%)
+  SHORT:             120 trades = +46.99 pts / +93.98 GBP
+    Wins:            90 (75.00%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -263.93 pts
+  Total P&L                   = -263.92 pts ✓
+============================================================
+
+19:16:55 - __main__ - INFO - ======================================================================
+19:16:55 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:16:55 - __main__ - INFO - ======================================================================
+19:16:55 - __main__ - INFO - Tick Data: data/backtest/germany40_2022/dax_2022_full_scaled.csv
+19:16:55 - __main__ - INFO - Market: GERMANY40
+19:16:55 - __main__ - INFO - TP: 40.0 pts
+19:16:55 - __main__ - INFO - ======================================================================
+19:16:55 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:16:55 - __main__ - INFO - Loading tick data...
+19:16:55 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2022/dax_2022_full_scaled.csv...
+19:19:00 - rsi2_strategy.tick_backtest - INFO - Loaded 36,303,466 ticks from 2022-01-03 00:00:00.134000+00:00 to 2022-12-30 21:14:59.586000+00:00
+19:19:00 - __main__ - INFO - Building candles from ticks...
+19:19:00 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:19:02 - rsi2_strategy.tick_backtest - INFO - Built 11,443 candles
+19:19:02 - __main__ - INFO - Filtering to session hours...
+19:19:02 - rsi2_strategy.tick_backtest - INFO - Filtered to 4386 bars within session hours
+19:19:02 - __main__ - INFO - Running tick-level backtest...
+19:19:02 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:19:02 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+19:19:02 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:22:12 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:22:12 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 133 trades
+19:22:12 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:22:12 - __main__ - INFO - Generating reports...
+19:22:12 - __main__ - INFO - ======================================================================
+19:22:12 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:22:12 - __main__ - INFO - ======================================================================
+19:22:12 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2022_long
+19:22:12 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2022_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2022_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2022_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        133
+Wins / Losses:       29 / 38
+Win Rate:            21.80%
+Avg Win:             26.621 pts
+Avg Loss:            -69.145 pts
+Payoff Ratio:        0.385
+Expectancy:          -0.741 pts
+------------------------------------------------------------
+Total P&L:           -98.50 pts / -197.01 GBP
+Max Drawdown:        -785.04 pts
+Avg Bars Held:       2.6
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,802.99
+  Return:            £-197.01 (-1.97%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                29 trades = +1160.00 pts
+  SL:                18 trades = -1800.00 pts
+  TRAILING_SL:       64 trades = +1336.17 pts
+  EOD Total:         22 trades = -794.67 pts
+    EOD Profitable:  2 trades = +32.82 pts
+    EOD Losses:      20 trades = -827.50 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              133 trades = -98.50 pts / -197.01 GBP
+    Wins:            95 (71.43%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -98.50 pts
+  Total P&L                   = -98.50 pts ✓
+============================================================
+
+19:22:13 - __main__ - INFO - ======================================================================
+19:22:13 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:22:13 - __main__ - INFO - ======================================================================
+19:22:13 - __main__ - INFO - Tick Data: data/backtest/germany40_2022/dax_2022_full_scaled.csv
+19:22:13 - __main__ - INFO - Market: GERMANY40
+19:22:13 - __main__ - INFO - TP: 40.0 pts
+19:22:13 - __main__ - INFO - ======================================================================
+19:22:13 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:22:13 - __main__ - INFO - Loading tick data...
+19:22:13 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2022/dax_2022_full_scaled.csv...
+19:24:19 - rsi2_strategy.tick_backtest - INFO - Loaded 36,303,466 ticks from 2022-01-03 00:00:00.134000+00:00 to 2022-12-30 21:14:59.586000+00:00
+19:24:19 - __main__ - INFO - Building candles from ticks...
+19:24:19 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:24:22 - rsi2_strategy.tick_backtest - INFO - Built 11,443 candles
+19:24:22 - __main__ - INFO - Filtering to session hours...
+19:24:22 - rsi2_strategy.tick_backtest - INFO - Filtered to 4386 bars within session hours
+19:24:22 - __main__ - INFO - Running tick-level backtest...
+19:24:22 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:24:22 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+19:24:22 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:27:07 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:27:07 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 120 trades
+19:27:07 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:27:07 - __main__ - INFO - Generating reports...
+19:27:07 - __main__ - INFO - ======================================================================
+19:27:07 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:27:07 - __main__ - INFO - ======================================================================
+19:27:07 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2022_short
+19:27:07 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2022_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2022_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2022_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        120
+Wins / Losses:       23 / 27
+Win Rate:            19.17%
+Avg Win:             25.204 pts
+Avg Loss:            -80.738 pts
+Payoff Ratio:        0.312
+Expectancy:          1.367 pts
+------------------------------------------------------------
+Total P&L:           164.08 pts / 328.16 GBP
+Max Drawdown:        -464.70 pts
+Avg Bars Held:       2.7
+Avg Days Held:       0.15
+Total Overnight Charges: 23.87 pts
+Positions Held Overnight: 10
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,328.16
+  Return:            £+328.16 (+3.28%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                23 trades = +917.44 pts
+  SL:                27 trades = -2179.92 pts
+  TRAILING_SL:       70 trades = +1426.56 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             120 trades = +164.08 pts / +328.16 GBP
+    Wins:            93 (77.50%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 164.08 pts
+  Total P&L                   = 164.08 pts ✓
+============================================================
+
+19:27:08 - __main__ - INFO - ======================================================================
+19:27:08 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:27:08 - __main__ - INFO - ======================================================================
+19:27:08 - __main__ - INFO - Tick Data: data/backtest/germany40_2022/dax_2022_full_scaled.csv
+19:27:08 - __main__ - INFO - Market: GERMANY40
+19:27:08 - __main__ - INFO - TP: 40.0 pts
+19:27:08 - __main__ - INFO - ======================================================================
+19:27:08 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:27:08 - __main__ - INFO - Loading tick data...
+19:27:08 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2022/dax_2022_full_scaled.csv...
+19:29:13 - rsi2_strategy.tick_backtest - INFO - Loaded 36,303,466 ticks from 2022-01-03 00:00:00.134000+00:00 to 2022-12-30 21:14:59.586000+00:00
+19:29:13 - __main__ - INFO - Building candles from ticks...
+19:29:13 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:29:16 - rsi2_strategy.tick_backtest - INFO - Built 11,443 candles
+19:29:16 - __main__ - INFO - Filtering to session hours...
+19:29:16 - rsi2_strategy.tick_backtest - INFO - Filtered to 4386 bars within session hours
+19:29:16 - __main__ - INFO - Running tick-level backtest...
+19:29:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:29:16 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+19:29:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:49:14 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:49:14 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 253 trades
+19:49:14 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:49:14 - __main__ - INFO - Generating reports...
+19:49:14 - __main__ - INFO - ======================================================================
+19:49:14 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:49:14 - __main__ - INFO - ======================================================================
+19:49:14 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2022_both
+19:49:14 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2022_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2022_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2022_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        253
+Wins / Losses:       52 / 65
+Win Rate:            20.55%
+Avg Win:             25.920 pts
+Avg Loss:            -73.960 pts
+Payoff Ratio:        0.350
+Expectancy:          0.259 pts
+------------------------------------------------------------
+Total P&L:           65.58 pts / 131.15 GBP
+Max Drawdown:        -833.77 pts
+Avg Bars Held:       2.6
+Avg Days Held:       0.07
+Total Overnight Charges: 23.87 pts
+Positions Held Overnight: 10
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,131.15
+  Return:            £+131.15 (+1.31%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                52 trades = +2077.44 pts
+  SL:                45 trades = -3979.92 pts
+  TRAILING_SL:       134 trades = +2762.73 pts
+  EOD Total:         22 trades = -794.67 pts
+    EOD Profitable:  2 trades = +32.82 pts
+    EOD Losses:      20 trades = -827.50 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              133 trades = -98.50 pts / -197.01 GBP
+    Wins:            95 (71.43%)
+  SHORT:             120 trades = +164.08 pts / +328.16 GBP
+    Wins:            93 (77.50%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 65.58 pts
+  Total P&L                   = 65.58 pts ✓
+============================================================
+
+19:49:15 - __main__ - INFO - ======================================================================
+19:49:15 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:49:15 - __main__ - INFO - ======================================================================
+19:49:15 - __main__ - INFO - Tick Data: data/backtest/germany40_2023/dax_2023_full_scaled.csv
+19:49:15 - __main__ - INFO - Market: GERMANY40
+19:49:15 - __main__ - INFO - TP: 40.0 pts
+19:49:15 - __main__ - INFO - ======================================================================
+19:49:15 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:49:15 - __main__ - INFO - Loading tick data...
+19:49:15 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2023/dax_2023_full_scaled.csv...
+19:50:26 - rsi2_strategy.tick_backtest - INFO - Loaded 21,982,295 ticks from 2023-01-02 00:15:28.892000+00:00 to 2023-12-29 20:58:58.297000+00:00
+19:50:26 - __main__ - INFO - Building candles from ticks...
+19:50:26 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:50:28 - rsi2_strategy.tick_backtest - INFO - Built 11,341 candles
+19:50:28 - __main__ - INFO - Filtering to session hours...
+19:50:28 - rsi2_strategy.tick_backtest - INFO - Filtered to 4351 bars within session hours
+19:50:28 - __main__ - INFO - Running tick-level backtest...
+19:50:28 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:50:28 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+19:50:28 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:53:05 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:53:05 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 136 trades
+19:53:05 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:53:05 - __main__ - INFO - Generating reports...
+19:53:05 - __main__ - INFO - ======================================================================
+19:53:05 - __main__ - INFO - TICK BACKTEST COMPLETE
+19:53:05 - __main__ - INFO - ======================================================================
+19:53:05 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2023_long
+19:53:05 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2023_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2023_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2023_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        136
+Wins / Losses:       22 / 32
+Win Rate:            16.18%
+Avg Win:             23.742 pts
+Avg Loss:            -58.773 pts
+Payoff Ratio:        0.404
+Expectancy:          4.327 pts
+------------------------------------------------------------
+Total P&L:           588.44 pts / 1176.87 GBP
+Max Drawdown:        -305.03 pts
+Avg Bars Held:       3.2
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,176.87
+  Return:            £+1,176.87 (+11.77%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                22 trades = +880.00 pts
+  SL:                14 trades = -1400.00 pts
+  TRAILING_SL:       72 trades = +1459.83 pts
+  EOD Total:         28 trades = -351.40 pts
+    EOD Profitable:  10 trades = +129.32 pts
+    EOD Losses:      18 trades = -480.72 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              136 trades = +588.44 pts / +1176.87 GBP
+    Wins:            104 (76.47%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 588.43 pts
+  Total P&L                   = 588.44 pts ✓
+============================================================
+
+19:53:06 - __main__ - INFO - ======================================================================
+19:53:06 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+19:53:06 - __main__ - INFO - ======================================================================
+19:53:06 - __main__ - INFO - Tick Data: data/backtest/germany40_2023/dax_2023_full_scaled.csv
+19:53:06 - __main__ - INFO - Market: GERMANY40
+19:53:06 - __main__ - INFO - TP: 40.0 pts
+19:53:06 - __main__ - INFO - ======================================================================
+19:53:06 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+19:53:06 - __main__ - INFO - Loading tick data...
+19:53:06 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2023/dax_2023_full_scaled.csv...
+19:57:09 - rsi2_strategy.tick_backtest - INFO - Loaded 21,982,295 ticks from 2023-01-02 00:15:28.892000+00:00 to 2023-12-29 20:58:58.297000+00:00
+19:57:09 - __main__ - INFO - Building candles from ticks...
+19:57:09 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+19:57:11 - rsi2_strategy.tick_backtest - INFO - Built 11,341 candles
+19:57:11 - __main__ - INFO - Filtering to session hours...
+19:57:11 - rsi2_strategy.tick_backtest - INFO - Filtered to 4351 bars within session hours
+19:57:11 - __main__ - INFO - Running tick-level backtest...
+19:57:11 - rsi2_strategy.tick_backtest - INFO - ============================================================
+19:57:11 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+19:57:11 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:01:01 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:01:01 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 139 trades
+20:01:01 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:01:01 - __main__ - INFO - Generating reports...
+20:01:01 - __main__ - INFO - ======================================================================
+20:01:01 - __main__ - INFO - TICK BACKTEST COMPLETE
+20:01:01 - __main__ - INFO - ======================================================================
+20:01:01 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2023_short
+20:01:01 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2023_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2023_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2023_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        139
+Wins / Losses:       34 / 36
+Win Rate:            24.46%
+Avg Win:             26.471 pts
+Avg Loss:            -81.614 pts
+Payoff Ratio:        0.324
+Expectancy:          -1.522 pts
+------------------------------------------------------------
+Total P&L:           -211.59 pts / -423.18 GBP
+Max Drawdown:        -491.49 pts
+Avg Bars Held:       6.0
+Avg Days Held:       0.55
+Total Overnight Charges: 117.36 pts
+Positions Held Overnight: 43
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,576.82
+  Return:            £-423.18 (-4.23%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                34 trades = +1339.03 pts
+  SL:                36 trades = -2938.09 pts
+  TRAILING_SL:       69 trades = +1387.48 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             139 trades = -211.59 pts / -423.18 GBP
+    Wins:            103 (74.10%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -211.58 pts
+  Total P&L                   = -211.59 pts ✓
+============================================================
+
+20:01:03 - __main__ - INFO - ======================================================================
+20:01:03 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+20:01:03 - __main__ - INFO - ======================================================================
+20:01:03 - __main__ - INFO - Tick Data: data/backtest/germany40_2023/dax_2023_full_scaled.csv
+20:01:03 - __main__ - INFO - Market: GERMANY40
+20:01:03 - __main__ - INFO - TP: 40.0 pts
+20:01:03 - __main__ - INFO - ======================================================================
+20:01:03 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+20:01:03 - __main__ - INFO - Loading tick data...
+20:01:03 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2023/dax_2023_full_scaled.csv...
+20:02:14 - rsi2_strategy.tick_backtest - INFO - Loaded 21,982,295 ticks from 2023-01-02 00:15:28.892000+00:00 to 2023-12-29 20:58:58.297000+00:00
+20:02:14 - __main__ - INFO - Building candles from ticks...
+20:02:14 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+20:02:16 - rsi2_strategy.tick_backtest - INFO - Built 11,341 candles
+20:02:16 - __main__ - INFO - Filtering to session hours...
+20:02:16 - rsi2_strategy.tick_backtest - INFO - Filtered to 4351 bars within session hours
+20:02:16 - __main__ - INFO - Running tick-level backtest...
+20:02:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:02:16 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+20:02:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:16:40 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:16:40 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 275 trades
+20:16:40 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:16:40 - __main__ - INFO - Generating reports...
+20:16:40 - __main__ - INFO - ======================================================================
+20:16:40 - __main__ - INFO - TICK BACKTEST COMPLETE
+20:16:40 - __main__ - INFO - ======================================================================
+20:16:40 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2023_both
+20:16:40 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2023_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2023_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2023_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        275
+Wins / Losses:       56 / 68
+Win Rate:            20.36%
+Avg Win:             25.100 pts
+Avg Loss:            -70.865 pts
+Payoff Ratio:        0.354
+Expectancy:          1.370 pts
+------------------------------------------------------------
+Total P&L:           376.85 pts / 753.69 GBP
+Max Drawdown:        -509.55 pts
+Avg Bars Held:       4.6
+Avg Days Held:       0.28
+Total Overnight Charges: 117.36 pts
+Positions Held Overnight: 43
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £10,753.69
+  Return:            £+753.69 (+7.54%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                56 trades = +2219.03 pts
+  SL:                50 trades = -4338.09 pts
+  TRAILING_SL:       141 trades = +2847.31 pts
+  EOD Total:         28 trades = -351.40 pts
+    EOD Profitable:  10 trades = +129.32 pts
+    EOD Losses:      18 trades = -480.72 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              136 trades = +588.44 pts / +1176.87 GBP
+    Wins:            104 (76.47%)
+  SHORT:             139 trades = -211.59 pts / -423.18 GBP
+    Wins:            103 (74.10%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 376.85 pts
+  Total P&L                   = 376.85 pts ✓
+============================================================
+
+20:16:41 - __main__ - INFO - ======================================================================
+20:16:41 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+20:16:41 - __main__ - INFO - ======================================================================
+20:16:41 - __main__ - INFO - Tick Data: data/backtest/germany40_2024/dax_2024_full_scaled.csv
+20:16:41 - __main__ - INFO - Market: GERMANY40
+20:16:41 - __main__ - INFO - TP: 40.0 pts
+20:16:41 - __main__ - INFO - ======================================================================
+20:16:41 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+20:16:41 - __main__ - INFO - Loading tick data...
+20:16:41 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2024/dax_2024_full_scaled.csv...
+20:17:18 - rsi2_strategy.tick_backtest - INFO - Loaded 10,703,691 ticks from 2024-01-01 23:05:08.299000+00:00 to 2024-12-30 23:59:59.281000+00:00
+20:17:18 - __main__ - INFO - Building candles from ticks...
+20:17:18 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+20:17:18 - rsi2_strategy.tick_backtest - INFO - Built 11,401 candles
+20:17:18 - __main__ - INFO - Filtering to session hours...
+20:17:19 - rsi2_strategy.tick_backtest - INFO - Filtered to 4384 bars within session hours
+20:17:19 - __main__ - INFO - Running tick-level backtest...
+20:17:19 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:17:19 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: LONG)
+20:17:19 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:18:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:18:16 - rsi2_strategy.tick_backtest - INFO - LONG Tick backtest complete: 123 trades
+20:18:16 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:18:16 - __main__ - INFO - Generating reports...
+20:18:16 - __main__ - INFO - ======================================================================
+20:18:16 - __main__ - INFO - TICK BACKTEST COMPLETE
+20:18:16 - __main__ - INFO - ======================================================================
+20:18:16 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2024_long
+20:18:16 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2024_long/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2024_long/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2024_long/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        123
+Wins / Losses:       19 / 28
+Win Rate:            15.45%
+Avg Win:             23.535 pts
+Avg Loss:            -47.486 pts
+Payoff Ratio:        0.496
+Expectancy:          7.368 pts
+------------------------------------------------------------
+Total P&L:           906.21 pts / 1812.42 GBP
+Max Drawdown:        -203.96 pts
+Avg Bars Held:       2.8
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,812.42
+  Return:            £+1,812.42 (+18.12%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                19 trades = +760.00 pts
+  SL:                6 trades = -600.00 pts
+  TRAILING_SL:       64 trades = +1351.02 pts
+  EOD Total:         34 trades = -604.81 pts
+    EOD Profitable:  12 trades = +124.79 pts
+    EOD Losses:      22 trades = -729.60 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              123 trades = +906.21 pts / +1812.42 GBP
+    Wins:            95 (77.24%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 906.21 pts
+  Total P&L                   = 906.21 pts ✓
+============================================================
+
+20:18:17 - __main__ - INFO - ======================================================================
+20:18:17 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+20:18:17 - __main__ - INFO - ======================================================================
+20:18:17 - __main__ - INFO - Tick Data: data/backtest/germany40_2024/dax_2024_full_scaled.csv
+20:18:17 - __main__ - INFO - Market: GERMANY40
+20:18:17 - __main__ - INFO - TP: 40.0 pts
+20:18:17 - __main__ - INFO - ======================================================================
+20:18:17 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+20:18:17 - __main__ - INFO - Loading tick data...
+20:18:17 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2024/dax_2024_full_scaled.csv...
+20:18:54 - rsi2_strategy.tick_backtest - INFO - Loaded 10,703,691 ticks from 2024-01-01 23:05:08.299000+00:00 to 2024-12-30 23:59:59.281000+00:00
+20:18:54 - __main__ - INFO - Building candles from ticks...
+20:18:54 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+20:18:55 - rsi2_strategy.tick_backtest - INFO - Built 11,401 candles
+20:18:55 - __main__ - INFO - Filtering to session hours...
+20:18:55 - rsi2_strategy.tick_backtest - INFO - Filtered to 4384 bars within session hours
+20:18:55 - __main__ - INFO - Running tick-level backtest...
+20:18:55 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:18:55 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: SHORT)
+20:18:55 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:20:27 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:20:27 - rsi2_strategy.tick_backtest - INFO - SHORT Tick backtest complete: 141 trades
+20:20:27 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:20:27 - __main__ - INFO - Generating reports...
+20:20:27 - __main__ - INFO - ======================================================================
+20:20:27 - __main__ - INFO - TICK BACKTEST COMPLETE
+20:20:27 - __main__ - INFO - ======================================================================
+20:20:27 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2024_short
+20:20:27 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2024_short/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2024_short/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2024_short/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        141
+Wins / Losses:       31 / 35
+Win Rate:            21.99%
+Avg Win:             26.097 pts
+Avg Loss:            -81.142 pts
+Payoff Ratio:        0.322
+Expectancy:          -0.523 pts
+------------------------------------------------------------
+Total P&L:           -73.73 pts / -147.47 GBP
+Max Drawdown:        -592.39 pts
+Avg Bars Held:       4.6
+Avg Days Held:       0.30
+Total Overnight Charges: 74.79 pts
+Positions Held Overnight: 32
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £9,852.53
+  Return:            £-147.47 (-1.47%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                31 trades = +1224.12 pts
+  SL:                35 trades = -2839.98 pts
+  TRAILING_SL:       75 trades = +1542.12 pts
+  EOD Total:         0 trades = +0.00 pts
+    EOD Profitable:  0 trades = +0.00 pts
+    EOD Losses:      0 trades = +0.00 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  SHORT:             141 trades = -73.73 pts / -147.47 GBP
+    Wins:            106 (75.18%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = -73.74 pts
+  Total P&L                   = -73.73 pts ✓
+============================================================
+
+20:20:28 - __main__ - INFO - ======================================================================
+20:20:28 - __main__ - INFO - TICK-LEVEL BACKTEST - RSI-2 Strategy
+20:20:28 - __main__ - INFO - ======================================================================
+20:20:28 - __main__ - INFO - Tick Data: data/backtest/germany40_2024/dax_2024_full_scaled.csv
+20:20:28 - __main__ - INFO - Market: GERMANY40
+20:20:28 - __main__ - INFO - TP: 40.0 pts
+20:20:28 - __main__ - INFO - ======================================================================
+20:20:28 - rsi2_strategy.margin - INFO - Margin validator initialized: Capital=£5,000.00, Margin=5.0%, Size=2.0 GBP/pt
+20:20:28 - __main__ - INFO - Loading tick data...
+20:20:28 - rsi2_strategy.tick_backtest - INFO - Loading tick data from data/backtest/germany40_2024/dax_2024_full_scaled.csv...
+20:21:07 - rsi2_strategy.tick_backtest - INFO - Loaded 10,703,691 ticks from 2024-01-01 23:05:08.299000+00:00 to 2024-12-30 23:59:59.281000+00:00
+20:21:07 - __main__ - INFO - Building candles from ticks...
+20:21:07 - rsi2_strategy.tick_backtest - INFO - Building 30-minute candles from ticks...
+20:21:08 - rsi2_strategy.tick_backtest - INFO - Built 11,401 candles
+20:21:08 - __main__ - INFO - Filtering to session hours...
+20:21:08 - rsi2_strategy.tick_backtest - INFO - Filtered to 4384 bars within session hours
+20:21:08 - __main__ - INFO - Running tick-level backtest...
+20:21:08 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:21:08 - rsi2_strategy.tick_backtest - INFO - Starting TICK-LEVEL backtest (Mode: BOTH)
+20:21:08 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:27:41 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:27:41 - rsi2_strategy.tick_backtest - INFO - BOTH Tick backtest complete: 264 trades
+20:27:41 - rsi2_strategy.tick_backtest - INFO - ============================================================
+20:27:41 - __main__ - INFO - Generating reports...
+20:27:41 - __main__ - INFO - ======================================================================
+20:27:41 - __main__ - INFO - TICK BACKTEST COMPLETE
+20:27:41 - __main__ - INFO - ======================================================================
+20:27:41 - __main__ - INFO - Reports saved to: reports/multi_year_comparison/2024_both
+20:27:41 - __main__ - INFO - ======================================================================
+Saved trades to reports/multi_year_comparison/2024_both/trades_tp40.csv
+Saved equity curve to reports/multi_year_comparison/2024_both/equity_tp40.csv
+Saved summary to reports/multi_year_comparison/2024_both/summary_tp40.csv
+
+============================================================
+BACKTEST SUMMARY (TP=40.0 pts, SL=N/A pts)
+============================================================
+Total Trades:        264
+Wins / Losses:       50 / 63
+Win Rate:            18.94%
+Avg Win:             24.886 pts
+Avg Loss:            -66.184 pts
+Payoff Ratio:        0.376
+Expectancy:          3.153 pts
+------------------------------------------------------------
+Total P&L:           832.48 pts / 1664.95 GBP
+Max Drawdown:        -432.03 pts
+Avg Bars Held:       3.7
+Avg Days Held:       0.16
+Total Overnight Charges: 74.79 pts
+Positions Held Overnight: 32
+------------------------------------------------------------
+Account Balance:
+  Starting Capital:  £10,000.00
+  Final Balance:     £11,664.95
+  Return:            £+1,664.95 (+16.65%)
+------------------------------------------------------------
+Exit Reasons:
+  TP:                50 trades = +1984.12 pts
+  SL:                41 trades = -3439.98 pts
+  TRAILING_SL:       139 trades = +2893.14 pts
+  EOD Total:         34 trades = -604.81 pts
+    EOD Profitable:  12 trades = +124.79 pts
+    EOD Losses:      22 trades = -729.60 pts
+------------------------------------------------------------
+LONG vs SHORT Breakdown:
+  LONG:              123 trades = +906.21 pts / +1812.42 GBP
+    Wins:            95 (77.24%)
+  SHORT:             141 trades = -73.73 pts / -147.47 GBP
+    Wins:            106 (75.18%)
+------------------------------------------------------------
+P&L Verification:
+  TP + SL + TRAILING_SL + EOD = 832.47 pts
+  Total P&L                   = 832.48 pts ✓
+============================================================
+
+
+============================================================
+Running LONG backtest for 2012...
+============================================================
+✓ LONG: 122.0 trades, +704.80 pts, +14.10%
+
+============================================================
+Running SHORT backtest for 2012...
+============================================================
+✓ SHORT: 96.0 trades, -300.87 pts, -6.02%
+
+============================================================
+Running BOTH backtest for 2012...
+============================================================
+✓ BOTH: 218.0 trades, +403.93 pts, +8.08%
+
+============================================================
+Running LONG backtest for 2020...
+============================================================
+✓ LONG: 138.0 trades, +224.14 pts, +4.48%
+
+============================================================
+Running SHORT backtest for 2020...
+============================================================
+✓ SHORT: 137.0 trades, +631.95 pts, +12.64%
+
+============================================================
+Running BOTH backtest for 2020...
+============================================================
+✓ BOTH: 275.0 trades, +856.10 pts, +17.12%
+
+============================================================
+Running LONG backtest for 2021...
+============================================================
+✓ LONG: 126.0 trades, -310.92 pts, -6.22%
+
+============================================================
+Running SHORT backtest for 2021...
+============================================================
+✓ SHORT: 120.0 trades, +46.99 pts, +0.94%
+
+============================================================
+Running BOTH backtest for 2021...
+============================================================
+✓ BOTH: 246.0 trades, -263.92 pts, -5.28%
+
+============================================================
+Running LONG backtest for 2022...
+============================================================
+✓ LONG: 133.0 trades, -98.50 pts, -1.97%
+
+============================================================
+Running SHORT backtest for 2022...
+============================================================
+✓ SHORT: 120.0 trades, +164.08 pts, +3.28%
+
+============================================================
+Running BOTH backtest for 2022...
+============================================================
+✓ BOTH: 253.0 trades, +65.58 pts, +1.31%
+
+============================================================
+Running LONG backtest for 2023...
+============================================================
+✓ LONG: 136.0 trades, +588.44 pts, +11.77%
+
+============================================================
+Running SHORT backtest for 2023...
+============================================================
+✓ SHORT: 139.0 trades, -211.59 pts, -4.23%
+
+============================================================
+Running BOTH backtest for 2023...
+============================================================
+✓ BOTH: 275.0 trades, +376.85 pts, +7.54%
+
+============================================================
+Running LONG backtest for 2024...
+============================================================
+✓ LONG: 123.0 trades, +906.21 pts, +18.12%
+
+============================================================
+Running SHORT backtest for 2024...
+============================================================
+✓ SHORT: 141.0 trades, -73.73 pts, -1.47%
+
+============================================================
+Running BOTH backtest for 2024...
+============================================================
+✓ BOTH: 264.0 trades, +832.48 pts, +16.65%
+
+✓ Detailed results saved to: reports/multi_year_comparison/detailed_comparison.csv
+
+================================================================================
+MULTI-YEAR P&L COMPARISON
+================================================================================
+ Year LONG (pts) SHORT (pts) BOTH (pts)   LONG (£)  SHORT (£)   BOTH (£)
+ 2012    +704.80     -300.87    +403.93 £+1,409.60   £-601.75   £+807.85
+ 2020    +224.14     +631.95    +856.10   £+448.29 £+1,263.90 £+1,712.19
+ 2021    -310.92      +46.99    -263.92   £-621.83    £+93.98   £-527.85
+ 2022     -98.50     +164.08     +65.58   £-197.01   £+328.16   £+131.15
+ 2023    +588.44     -211.59    +376.85 £+1,176.87   £-423.18   £+753.69
+ 2024    +906.21      -73.73    +832.48 £+1,812.42   £-147.47 £+1,664.95
+================================================================================
+
+TOTALS (all years):
+  LONG:  +2014.17 pts  |  £+4,028.34
+  SHORT: +256.83 pts  |  £+513.64
+  BOTH:  +2271.02 pts  |  £+4,541.98
+================================================================================
+
+✓ Simple comparison saved to: reports/multi_year_comparison/simple_pnl_comparison.csv
+✓ All reports saved to: reports/multi_year_comparison/

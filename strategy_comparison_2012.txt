@@ -1,0 +1,42 @@
+====================================================================================================
+STRATEGY COMPARISON: EOD EXIT vs OVERNIGHT HOLDS
+====================================================================================================
+
+Data Period: 2012-01-20 09:30:00+00:00 to 2012-12-21 15:30:00+00:00
+Total Bars: 121 trades
+
+====================================================================================================
+
+Metric                                 EOD Exit (true)  Overnight (false)         Difference
+----------------------------------------------------------------------------------------------------
+PERFORMANCE                        
+Total P&L (NET)                         +366.29 pts     +693.67 pts     +327.38 (+89%)
+Return %                                     +7.33%         +13.87%             +6.54%
+Final Balance                               £10,732.58         £11,387.34            +654.76
+
+OVERNIGHT METRICS                  
+Overnight Charges                          0.00 pts      +56.43 pts         +56.43 pts
+Positions Held Overnight                      0 (0.0%)         54 (44.6%)                +54
+Avg Days Held                                  0.00           +0.71              +0.71
+Avg Bars Held                                  +5.1            +9.2               +4.1
+
+RISK METRICS                       
+Max Drawdown                            -370.91 pts     -476.86 pts        -105.95 pts
+Win Rate                                      0.00%           0.00%              0.00%
+
+EXIT REASONS                       
+Trailing SL Exits                       60 (+1667 pts)     97 (+3114 pts)                +37
+SL Exits                                  6 (-600 pts)     24 (-2420 pts)                +18
+EOD Exits                                55 (-701 pts)         0 (+0 pts)                -55
+
+====================================================================================================
+
+ANALYSIS:
+----------------------------------------------------------------------------------------------------
+✅ Overnight strategy is +89.4% MORE PROFITABLE (+327.38 pts)
+   - Extra profit: +327.38 pts
+   - Overnight charges: 56.43 pts
+   - ROI on overnight costs: 5.8x (gained 5.8 pts for every 1 pt spent)
+⚠️  Higher drawdown with overnight: -105.95 pts worse - ensure adequate capital
+
+====================================================================================================

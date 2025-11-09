@@ -1,0 +1,84 @@
+================================================================================
+JANUARY 2024 BACKTEST COMPARISON: BAR vs TICK-LEVEL
+================================================================================
+Market: GERMANY40 (DAX)
+Period: January 2024
+Strategy: RSI-2 Rebound Long with Trailing Stop
+TP: 40 pts | Initial SL: 100 pts | Trailing: Activate@25pts, Distance=10pts
+================================================================================
+
+PERFORMANCE COMPARISON
+────────────────────────────────────────────────────────────────────────────────
+Metric                          Bar Backtest    Tick Backtest    Difference
+────────────────────────────────────────────────────────────────────────────────
+Total P&L                       +75.38 pts      +33.58 pts       -41.80 pts
+Return %                        +1.51%          +0.67%           -0.84%
+Final Balance                   £10,150.76      £10,067.15       -£83.61
+
+Total Trades                    11              11               0
+Win Rate                        0.00%           0.00%            0.00%
+Avg Win                         24.93 pts       16.79 pts        -8.14 pts
+Avg Loss                        -41.35 pts      -58.78 pts       -17.43 pts
+Expectancy                      6.85 pts        3.05 pts         -3.80 pts
+
+Max Drawdown                    -100.00 pts     -100.00 pts      0.00 pts
+Avg Bars Held                   4.7             4.6              -0.1
+────────────────────────────────────────────────────────────────────────────────
+
+EXIT REASONS BREAKDOWN
+────────────────────────────────────────────────────────────────────────────────
+Exit Type                Bar Backtest                 Tick Backtest
+────────────────────────────────────────────────────────────────────────────────
+TP                       0 trades (+0.00 pts)         0 trades (+0.00 pts)
+SL                       1 trades (-100.00 pts)       1 trades (-100.00 pts)
+TRAILING_SL              6 trades (+190.86 pts)       6 trades (+135.41 pts)
+EOD (Profitable)         2 trades (+8.56 pts)         3 trades (+15.72 pts)
+EOD (Losses)             2 trades (-24.04 pts)        1 trades (-17.56 pts)
+EOD (Total)              4 trades (-15.48 pts)        4 trades (-1.83 pts)
+────────────────────────────────────────────────────────────────────────────────
+
+KEY FINDINGS
+────────────────────────────────────────────────────────────────────────────────
+
+1. TRAILING STOP EXITS: -55.45 pts difference (-29% worse on tick)
+   - Bar backtest: +190.86 pts from 6 trailing exits
+   - Tick backtest: +135.41 pts from 6 trailing exits
+   
+   WHY: Tick-level simulation catches intra-bar reversals that bar backtest misses.
+   Bar backtest only sees bar.high/low, tick sees every price movement.
+   More realistic exits happen earlier, capturing less profit.
+
+2. EOD EXITS: +13.65 pts better on tick
+   - Bar backtest: 4 EOD exits (-15.48 pts total)
+   - Tick backtest: 4 EOD exits (-1.83 pts total)
+   
+   WHY: Tick-level uses actual last tick bid price for exit instead of bar.close
+   approximation. More accurate EOD exit pricing.
+
+3. SAME STATIC SL LOSSES
+   - Both: 1 trade hitting -100 pts SL
+   - Trailing never activated on this losing trade (didn't reach +25 pts)
+
+4. OVERALL: Bar backtest OVERESTIMATED profits by +41.80 pts (+124%)
+   - Tick simulation is more realistic/conservative
+   - Bar backtest may give false confidence about trailing stop performance
+
+================================================================================
+CONCLUSION
+================================================================================
+
+The tick-level backtest provides a MORE REALISTIC simulation because it:
+✓ Processes every price movement (1M+ ticks vs 374 bars)
+✓ Catches intra-bar reversals that hit SL/TP
+✓ Uses actual bid/ask from tick data
+✓ Updates trailing stop on every tick (like live trading)
+
+The bar backtest OVERESTIMATES profitability because it:
+✗ Only checks SL/TP at bar high/low (misses actual order)
+✗ Assumes you can exit at bar.high even if price spiked briefly
+✗ Doesn't account for intra-bar price action
+
+RECOMMENDATION: Use tick-level backtest results for realistic expectations.
+If going live, expect performance closer to +33.58 pts than +75.38 pts for Jan.
+
+================================================================================

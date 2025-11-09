@@ -90,6 +90,29 @@ class BacktestReporter:
 
         return pd.DataFrame(equity_data)
 
+    def _generate_trade_type_breakdown(self, trades_df: pd.DataFrame) -> Dict[str, Any]:
+        """Generate LONG vs SHORT breakdown if trade_type column exists."""
+        if 'trade_type' not in trades_df.columns:
+            return {}
+
+        long_trades = trades_df[trades_df['trade_type'] == 'LONG']
+        short_trades = trades_df[trades_df['trade_type'] == 'SHORT']
+
+        breakdown = {
+            'long_trades': len(long_trades),
+            'short_trades': len(short_trades),
+            'long_pnl_pts': round(long_trades['pnl_pts'].sum(), 2) if len(long_trades) > 0 else 0.0,
+            'short_pnl_pts': round(short_trades['pnl_pts'].sum(), 2) if len(short_trades) > 0 else 0.0,
+            'long_pnl_gbp': round(long_trades['pnl_gbp'].sum(), 2) if len(long_trades) > 0 else 0.0,
+            'short_pnl_gbp': round(short_trades['pnl_gbp'].sum(), 2) if len(short_trades) > 0 else 0.0,
+            'long_wins': len(long_trades[long_trades['pnl_pts'] > 0]) if len(long_trades) > 0 else 0,
+            'short_wins': len(short_trades[short_trades['pnl_pts'] > 0]) if len(short_trades) > 0 else 0,
+            'long_win_rate': round((len(long_trades[long_trades['pnl_pts'] > 0]) / len(long_trades) * 100), 2) if len(long_trades) > 0 else 0.0,
+            'short_win_rate': round((len(short_trades[short_trades['pnl_pts'] > 0]) / len(short_trades) * 100), 2) if len(short_trades) > 0 else 0.0,
+        }
+
+        return breakdown
+
     def _generate_summary(self, trades_df: pd.DataFrame) -> Dict[str, Any]:
         """Generate summary metrics."""
         total_trades = len(trades_df)
@@ -158,6 +181,9 @@ class BacktestReporter:
         final_balance = starting_capital + total_gbp
         return_pct = (total_gbp / starting_capital) * 100
 
+        # Generate LONG vs SHORT breakdown
+        trade_type_breakdown = self._generate_trade_type_breakdown(trades_df)
+
         summary = {
             'trades': total_trades,
             'wins': num_wins,
@@ -189,7 +215,9 @@ class BacktestReporter:
             # Overnight metrics
             'avg_days_held': round(avg_days_held, 2),
             'total_overnight_charges': round(total_overnight_charges, 2),
-            'positions_held_overnight': positions_held_overnight
+            'positions_held_overnight': positions_held_overnight,
+            # LONG vs SHORT breakdown
+            **trade_type_breakdown
         }
 
         return summary
@@ -233,6 +261,18 @@ class BacktestReporter:
         print(f"  EOD Total:         {summary['eod_exits']} trades = {summary.get('eod_pnl_pts', 0):+.2f} pts")
         print(f"    EOD Profitable:  {summary.get('eod_profitable', 0)} trades = {summary.get('eod_profitable_pnl_pts', 0):+.2f} pts")
         print(f"    EOD Losses:      {summary.get('eod_losses', 0)} trades = {summary.get('eod_losses_pnl_pts', 0):+.2f} pts")
+
+        # Show LONG vs SHORT breakdown if available
+        if summary.get('long_trades', 0) > 0 or summary.get('short_trades', 0) > 0:
+            print(f"-" * 60)
+            print(f"LONG vs SHORT Breakdown:")
+            if summary.get('long_trades', 0) > 0:
+                print(f"  LONG:              {summary['long_trades']} trades = {summary.get('long_pnl_pts', 0):+.2f} pts / {summary.get('long_pnl_gbp', 0):+.2f} GBP")
+                print(f"    Wins:            {summary.get('long_wins', 0)} ({summary.get('long_win_rate', 0):.2f}%)")
+            if summary.get('short_trades', 0) > 0:
+                print(f"  SHORT:             {summary['short_trades']} trades = {summary.get('short_pnl_pts', 0):+.2f} pts / {summary.get('short_pnl_gbp', 0):+.2f} GBP")
+                print(f"    Wins:            {summary.get('short_wins', 0)} ({summary.get('short_win_rate', 0):.2f}%)")
+
         print(f"-" * 60)
         print(f"P&L Verification:")
         verification_sum = (summary.get('tp_pnl_pts', 0) + summary.get('sl_pnl_pts', 0) +

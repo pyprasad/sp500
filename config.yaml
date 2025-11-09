@@ -1,62 +1,58 @@
-# Global strategy parameters (can be overridden by CLI args)
 timeframe_sec: 1800
 rsi_period: 2
+strategy_mode: both
+starting_capital: 5000.0
+margin_requirement_pct: 5.0
+long:
+  enabled: true
+  oversold_threshold: 5.0
+  tp_pts: 40
+  sl_pts: 100
+  use_trailing_stop: true
+  trailing_activation_pts: 25
+  trailing_distance_pts: 10
+  force_eod_exit: true
+  max_hold_days: 0
+short:
+  enabled: true
+  overbought_threshold: 96.0
+  tp_pts: 40
+  sl_pts: 80
+  use_trailing_stop: true
+  trailing_activation_pts: 25
+  trailing_distance_pts: 10
+  force_eod_exit: false
+  max_hold_days: 0
 oversold: 5.0
-
 take_profits_pts: 40
 stop_loss_pts: 100.0
-
-# Trailing stop configuration
-use_trailing_stop: true  # Set to true to enable trailing stop (BEST: activate=25, distance=10 → +1,244 pts!)
-trailing_stop_distance_pts: 10  # Distance in points behind highest price reached
-trailing_stop_activation_pts: 25  # Activate trailing after this much profit (0 = activate immediately)
-
-# EOD exit policy (End-of-Day position management)
-force_eod_exit: true  # true = close all positions by EOD (conservative), false = allow overnight holds
-max_hold_days: 0  # Maximum days to hold position (0 = unlimited, recommend 3-5 for safety)
-
-# Overnight funding charges (for positions held overnight)
-overnight_funding_rate_pct: 0.035  # Annual funding rate (3.5% default, check IG platform for current rates)
-# Note: Rate varies by market. For DAX: ~3.5% = ~0.96 pts/day
-
-# Spread monitoring and safety
-log_spreads: true  # Enable spread logging to CSV for analysis
-spread_log_interval_sec: 300  # Log spread every 5 minutes (medium frequency)
-spread_log_path: "data/spreads"  # Directory for spread log files
-max_entry_spread_pts: 4.0  # Refuse entry if spread exceeds this (safety check, 2x normal spread)
-
+use_trailing_stop: true
+trailing_stop_distance_pts: 10
+trailing_stop_activation_pts: 25
+force_eod_exit: true
+max_hold_days: 0
+overnight_funding_rate_pct: 0.035
+log_spreads: true
+spread_log_interval_sec: 300
+spread_log_path: data/spreads
+max_entry_spread_pts: 4.0
 size_gbp_per_point: 2.0
 only_long: true
 one_position_at_a_time: true
 dry_run: false
-log_level: "INFO"
-
-# Historical data pre-loading (for accurate RSI at startup)
-preload_candles: 1000  # Number of historical bars to fetch from IG API at startup (max available)
-min_candles_for_trading: 20  # Minimum candles before RSI is considered reliable
-
-# Market-specific configurations
+log_level: INFO
+preload_candles: 1000
+min_candles_for_trading: 20
 markets:
-  # US500:
-  #   symbol: "US 500"
-  #   epic: "IX.D.SPTRD.DAILY.IP"
-  #   tz: "America/New_York"
-  #   session_open: "09:30"
-  #   session_close: "16:00"
-  #   no_trade_first_minutes: 30
-  #   spread_assumption_pts: 0.6
- 
   GERMANY40:
-    symbol: "Germany 40"
-    epic: "IX.D.DAX.DAILY.IP"
-    tz: "Europe/Berlin"
-    session_open: "09:00"
-    session_close: "17:30"
+    symbol: Germany 40
+    epic: IX.D.DAX.DAILY.IP
+    tz: Europe/Berlin
+    session_open: 09:00
+    session_close: '17:30'
     no_trade_first_minutes: 30
-    spread_assumption_pts: 2.0  # Normal market hours spread
-    off_hours_spread_multiplier: 2.5  # Off-hours spread = normal × 2.5 (moderate assumption)
-    overnight_funding_rate_pct: 0.035  # 3.5% annual (~0.96 pts/day for DAX)
-    state_file: "data/state/trade_state_GERMANY40.json"  # Per-market state file
-
-# Default market (used if --market not specified)
-default_market: "US500"
+    spread_assumption_pts: 2.0
+    off_hours_spread_multiplier: 2.5
+    overnight_funding_rate_pct: 0.035
+    state_file: data/state/trade_state_GERMANY40.json
+default_market: US500
