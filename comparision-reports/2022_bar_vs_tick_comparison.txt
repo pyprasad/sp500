@@ -1,0 +1,74 @@
+================================================================================
+BACKTEST COMPARISON: BAR-ONLY vs TICK-LEVEL SIMULATION
+================================================================================
+Market: GERMANY40 (DAX)
+Strategy: RSI-2 Rebound Long with Trailing Stop
+Period: 2024
+================================================================================
+
+PERFORMANCE METRICS
+--------------------------------------------------------------------------------
+Metric                                    Bar Backtest      Tick Backtest Difference
+--------------------------------------------------------------------------------
+Total P&L                                        77.82             -98.50 -176.32 pts (-226.6%)
+Return %                                         1.56%             -1.97% -3.53%
+Final Balance                               £10,155.63          £9,802.99 £-352.64
+
+Total Trades                                       133                133 0
+Wins                                                 0                 29 29
+Losses                                              44                 38 -6
+Win Rate                                         0.00%             21.80% +21.80%
+
+Avg Win                                          37.37              26.62 -10.75 pts
+Avg Loss                                        -73.81             -69.14 +4.67 pts
+Expectancy                                        0.58              -0.74 -1.33 pts
+
+Max Drawdown                                   -577.80            -785.04 -207.24 pts
+Avg Bars Held                                      2.8                2.6 -0.2
+--------------------------------------------------------------------------------
+
+EXIT REASONS BREAKDOWN
+--------------------------------------------------------------------------------
+Exit Type                            Bar Backtest                Tick Backtest
+--------------------------------------------------------------------------------
+TP                                              -                            -
+SL                                              -                            -
+TRAILING_SL                                     -                            -
+EOD                                             -                            -
+--------------------------------------------------------------------------------
+
+KEY FINDINGS
+--------------------------------------------------------------------------------
+
+1. TICK BACKTEST SHOWS LOWER PROFIT: 226.6% less
+   - Bar backtest: +77.82 pts
+   - Tick backtest: +-98.50 pts
+   - Difference: -176.32 pts
+
+   WHY: Tick-level simulation catches intra-bar reversals that bar backtest misses.
+   Bar backtest only sees bar.high/low, tick sees every price movement.
+   More realistic exits happen earlier, capturing less profit.
+
+2. SIMULATION REALISM
+   - Tick backtest: Processes every tick (mirrors live trading)
+   - Bar backtest: Only checks exits at bar boundaries
+   - Tick is more realistic for trailing stop strategies
+
+3. RECOMMENDATION
+   ✗ Strategy shows LOSSES on tick-level simulation (-98.50 pts)
+   ✗ Do NOT go live without strategy adjustment
+   ✗ Bar backtest gave false confidence
+
+================================================================================
+CONCLUSION
+================================================================================
+
+The tick-level backtest provides MORE REALISTIC simulation because it:
+✓ Processes every price movement (millions of ticks vs thousands of bars)
+✓ Catches intra-bar reversals that hit SL/TP
+✓ Uses actual bid/ask from tick data
+✓ Updates trailing stop on every tick (like live trading)
+
+Use TICK backtest results for live trading expectations.
+Use BAR backtest only for quick parameter testing.
+================================================================================
